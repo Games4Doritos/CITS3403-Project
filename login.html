@@ -4,4 +4,62 @@
         <link rel="stylesheet" href="globals.css">
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
+
+    <body class="bg-[var(--background)] min-h-screen">
+        <!-- Navbar -->
+        <div class="bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] sticky top-0 w-full z-10">
+            <div>
+                <a href="index.html">Home</a>
+            </div>
+            <div class="ml-auto px-2">
+                <a href="login.html">Login</a>
+            </div>
+            <div class="px-2">
+                <a href="signup.html">Sign Up</a>
+            </div>
+        </div>
+
+        <!-- Login Section -->
+        <section class="w-full flex justify-center items-center py-20 px-6">
+            <div class="w-full max-w-md rounded-3xl border border-[var(--primary)] bg-[rgba(255,255,255,0.02)] p-8 shadow-[0_0_1.2rem_var(--secondary)]">
+            <h1 class="text-center text-4xl text-[var(--primary)] mb-3">Login</h1>
+            <p class="text-center text-[var(--secondary)] mb-8">
+                Log in to save your score and join the leaderboard
+            </p>
+
+            <form class="space-y-5">
+                <div>
+                    <label class="block text-[var(--primary)] mb-2">Email</label>
+                    <input
+                        type="email"
+                        placeholder="Enter your email"
+                        class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-[var(--primary)] mb-2">Password</label>
+                    <input
+                        type="password"
+                        placeholder="Enter your password"
+                        required
+                        class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]"
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                >
+                    Log In
+                </button>
+            </form>
+
+            <p class="text-center text-[var(--secondary)] mt-6">
+                Don’t have an account?
+                <a href="signup.html" class="text-[var(--primary)] hover:underline">Sign Up</a>
+            </p>
+            </div>
+        </section>
+    </body>
 </html>
