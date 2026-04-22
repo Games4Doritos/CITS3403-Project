@@ -4,4 +4,78 @@
         <link rel="stylesheet" href="globals.css">
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
+    <body class="bg-[var(--background)] min-h-screen">
+        <!-- Navbar (exact same as other pages) -->
+        <div class="bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] sticky top-0 w-full z-10">
+            <div>
+                <a href="index.html">Home</a>
+            </div>
+            <div class="ml-auto px-2">
+                <a href="login.html">Login</a>
+            </div>
+            <div class="px-2">
+                <a href="signup.html">Sign Up</a>
+            </div>
+        </div>
+
+        <!-- Leaderboard Section -->
+        <section class="w-full flex justify-center items-center py-20 px-6">
+            <div class="w-full max-w-3xl rounded-3xl border border-[var(--primary)] bg-[rgba(255,255,255,0.02)] p-8 shadow-[0_0_1.2rem_var(--secondary)]">
+                <h1 class="text-center text-4xl text-[var(--primary)] mb-3">Leaderboard</h1>
+                <p class="text-center text-[var(--secondary)] mb-8">
+                    Top players worldwide
+                </p>
+
+                <!-- Leaderboard Table -->
+                <div class="space-y-3">
+                    <!-- Header Row -->
+                    <div class="flex border-b border-[var(--primary)] pb-3">
+                        <div class="w-16 text-[var(--primary)]">Rank</div>
+                        <div class="flex-1 text-[var(--primary)]">Player</div>
+                        <div class="w-24 text-right text-[var(--primary)]">Score</div>
+                    </div>
+
+                    <!-- Sample Player Rows -->
+                    <div class="flex p-3 rounded-2xl border border-[var(--primary)] bg-transparent">
+                        <div class="w-16 text-[var(--secondary)]">1</div>
+                        <div class="flex-1 text-white">Player123</div>
+                        <div class="w-24 text-right text-white">9999</div>
+                    </div>
+
+                    <div class="flex p-3 rounded-2xl border border-[var(--primary)] bg-transparent">
+                        <div class="w-16 text-[var(--secondary)]">2</div>
+                        <div class="flex-1 text-white">GamerPro</div>
+                        <div class="w-24 text-right text-white">8765</div>
+                    </div>
+
+                    <div class="flex p-3 rounded-2xl border border-[var(--primary)] bg-transparent">
+                        <div class="w-16 text-[var(--secondary)]">3</div>
+                        <div class="flex-1 text-white">SpeedRunner</div>
+                        <div class="w-24 text-right text-white">7543</div>
+                    </div>
+
+                    <div class="flex p-3 rounded-2xl border border-[var(--primary)] bg-transparent">
+                        <div class="w-16 text-[var(--secondary)]">4</div>
+                        <div class="flex-1 text-white">JumpMaster</div>
+                        <div class="w-24 text-right text-white">6420</div>
+                    </div>
+
+                    <div class="flex p-3 rounded-2xl border border-[var(--primary)] bg-transparent">
+                        <div class="w-16 text-[var(--secondary)]">5</div>
+                        <div class="flex-1 text-white">HighScore99</div>
+                        <div class="w-24 text-right text-white">5321</div>
+                    </div>
+                </div>
+
+                <!-- Back to Game Button -->
+                <div class="flex justify-center mt-8">
+                    <a href="index.html">
+                        <div class="p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition">
+                            Back to Home
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </body>
 </html>
