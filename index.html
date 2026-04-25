@@ -3,6 +3,7 @@
         <title>Game Name - Home</title>
         <link rel="stylesheet" href="globals.css">
         <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
         <div class = "bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] sticky inset-0 w-full z-10">
@@ -26,35 +27,38 @@
             <div class="h-full flex flex-col justify-center">
                 <h1 class="text-5xl text-[var(--primary)] py-10">Game Name</h1>
                 <h3 class="text-lg text-[var(--secondary)] pb-16">Game Description</h3>
-                <div class="flex justify-center flex-wrap gap-10">
+                <div class="flex justify-center flex-wrap gap-10 text-lg">
                     <a href="signup.html" class="">
-                        <div class="p-7 bg-[var(--primary)] hover:scale-105 w-fit rounded-3xl text-lg text-white shadow-[0_0_1rem_var(--secondary)]">
+                        <div class="p-7 bg-[var(--primary)] hover:scale-105 w-fit rounded-3xl text-white shadow-[0_0_1rem_var(--secondary)]">
                             Start Playing
                         </div>
                     </a>
                     <a href="leaderboard.html">
-                        <div class="p-7 hover:scale-105 w-fit rounded-3xl text-lg text-white shadow-[0_0_1rem_var(--secondary)]">
+                        <div class="p-7 hover:scale-105 w-fit rounded-3xl text-white shadow-[0_0_1rem_var(--secondary)] backdrop-brightness-110">
                             Leaderboard
                         </div>
                     </a>
                 </div>
             </div>
             
-            <div class="flex justify-center flex-wrap mb-64 px-10">
-                <div class="p-7 rounded-2xl w-64 text-white m-5 shadow-[inset_0_0_1rem_var(--secondary)]"
-                    
-                >
-                   Endless Challenge
+            <div class="flex justify-center flex-wrap mb-64 px-10 text-lg text-left">
+                <div class="p-7 rounded-2xl w-64 text-white m-5 shadow-[0_0_1rem_var(--secondary)] backdrop-brightness-110">
+                    <p class="p-2 bg-[var(--secondary)] w-fit rounded-lg relative mb-1">
+                        <i class="fa fa-bolt" aria-hidden="true"></i>
+                    </p>
+                    Endless Challenge
                 </div>
-                <div class="p-7 rounded-2xl w-64 text-white m-5 shadow-[inset_0_0_1rem_var(--secondary)]"
-                    
-                >
+                <div class="p-7 rounded-2xl w-64 text-white m-5 shadow-[0_0_1rem_var(--secondary)] backdrop-brightness-110">
+                    <p class="p-2 bg-[var(--secondary)] w-fit rounded-lg relative mb-1">
+                        <i class="fa fa-trophy" aria-hidden="true"></i>
+                    </p>
                     Global Rankings
                 </div>
-                <div class="p-7 rounded-2xl w-64 text-white m-5 shadow-[inset_0_0_1rem_var(--secondary)]"
-                >
+                <div class="p-7 rounded-2xl w-64 text-white m-5 shadow-[0_0_1rem_var(--secondary)] backdrop-brightness-110">
+                    <p class="p-2 bg-[var(--secondary)] w-fit rounded-lg relative mb-1">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                    </p>
                     Achievements and Customisation
-
                 </div>
 
             </div>
