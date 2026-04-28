@@ -1,24 +1,24 @@
 <html>
     <head>
         <title>Game Name - Home</title>
-        <link rel="stylesheet" href="globals.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='globals.css')}}">
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
         <div class = "bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] fixed w-full z-10">
             <div class="">
-                <a href="index.html">
+                <a href="{{ url_for('index') }}">
                     Home
                 </a>
             </div>
             <div class="ml-auto px-2">
-                <a href="login.html">
+                <a href="{{ url_for('login') }}">
                     Login
                 </a>
             </div>
             <div class="px-2">
-                <a href="signup.html">
+                <a href="{{ url_for('signup') }}">
                     Sign Up
                 </a>
             </div>
@@ -32,12 +32,12 @@
                     </h1>
                 <h3 class="text-lg text-[var(--secondary)] pb-16" style="text-shadow: 0 0 2rem var(--secondary), 0 0 1rem var(--primary);">Game Description</h3>
                 <div class="flex justify-center flex-wrap gap-10 text-lg">
-                    <a href="signup.html" class="">
+                    <a href="{{ url_for('play') }}" class="">
                         <div class="p-7 bg-[var(--primary)] hover:scale-105 w-fit rounded-3xl shadow-[0_0_1rem_var(--secondary)]">
                             Start Playing
                         </div>
                     </a>
-                    <a href="leaderboard.html">
+                    <a href="{{ url_for('leaderboard') }}">
                         <div class="p-7 hover:scale-105 w-fit rounded-3xl shadow-[0_0_1rem_var(--secondary)] backdrop-brightness-110">
                             Leaderboard
                         </div>
@@ -85,7 +85,7 @@
                 <h2 class="text-5xl text-[var(--primary)]" style="text-shadow: 0 0 3rem var(--secondary), 0 0 2rem var(--primary);">Ready to Start?</h2>
                 <p class="my-10 mb-20" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">Join other runners in the journey to become the best!</p>
                 <div class="mx-auto p-7 bg-[var(--primary)] hover:scale-105 w-fit rounded-3xl text-lg  shadow-[0_0_1rem_var(--secondary)]">
-                    <a href="signup.html">
+                    <a href="{{ url_for('signup') }}">
                         Create a Free Account!
                     </a>
                 </div>

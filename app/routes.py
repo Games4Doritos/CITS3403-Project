@@ -1,7 +1,7 @@
 from flask import render_template
 from app import app
 
-@app.route("/")
+@app.route('/')
 def index():
     return render_template('index.html')
 
@@ -13,8 +13,14 @@ def login():
 def signup():
     return render_template('signup.html')
 
+@app.route('/play')
+def play():
+    return render_template('play.html')
+
 @app.route('/leaderboard')
 def leaderboard():
     return render_template('leaderboard.html')
 
-@app.route
+@app.route('/profile')
+def profile():
+    return render_template('profile.html')
