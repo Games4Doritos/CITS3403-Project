@@ -8,13 +8,13 @@
         <!-- Navbar -->
         <div class="bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] fixed w-full z-10">
             <div>
-                <a href="index.html">Home</a>
+                <a href="{{ url_for('index') }}">Home</a>
             </div>
             <div class="ml-auto px-2">
-                <a href="leaderboard.html">Leaderboard</a>
+                <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
             </div>
             <div class="px-2">
-                <a href="login.html">Logout</a>
+                <a href="{{ url_for('login') }}">Logout</a>
             </div>
         </div>
 
@@ -65,10 +65,10 @@
                     <a href="edit-profile.html" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
                         Edit Profile
                     </a>
-                    <a href="leaderboard.html" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                    <a href="{{ url_for('leaderboard') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                         View Leaderboard
                     </a>
-                    <a href="index.html" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                    <a href="{{ url_for('index') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                         Back to Home
                     </a>
                 </div>

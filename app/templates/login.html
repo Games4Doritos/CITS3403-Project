@@ -9,13 +9,13 @@
         <!-- Navbar -->
         <div class="bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] fixed w-full z-10">
             <div>
-                <a href="index.html">Home</a>
+                <a href="{{ url_for('index') }}">Home</a>
             </div>
             <div class="ml-auto px-2">
-                <a href="login.html">Login</a>
+                <a href="{{ url_for('login') }}">Login</a>
             </div>
             <div class="px-2">
-                <a href="signup.html">Sign Up</a>
+                <a href="{{ url_for('signup') }}">Sign Up</a>
             </div>
         </div>
 
@@ -57,7 +57,7 @@
 
             <p class="text-center text-[var(--secondary)] mt-6">
                 Don’t have an account?
-                <a href="signup.html" class="text-[var(--primary)] hover:underline">Sign Up</a>
+                <a href="{{ url_for('signup') }}" class="text-[var(--primary)] hover:underline">Sign Up</a>
             </p>
             </div>
         </section>
