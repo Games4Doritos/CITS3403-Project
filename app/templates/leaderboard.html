@@ -1,20 +1,20 @@
 <html>
     <head>
         <title>Game Name - Leaderboard</title>
-        <link rel="stylesheet" href="globals.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='globals.css')}}">
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body class="bg-[var(--background)] min-h-screen">
         <!-- Navbar (exact same as other pages) -->
         <div class="bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] fixed w-full z-10">
             <div>
-                <a href="index.html">Home</a>
+                <a href="{{ url_for('index') }}">Home</a>
             </div>
             <div class="ml-auto px-2">
-                <a href="login.html">Login</a>
+                <a href="{{ url_for('login') }}">Login</a>
             </div>
             <div class="px-2">
-                <a href="signup.html">Sign Up</a>
+                <a href="{{ url_for('signup') }}">Sign Up</a>
             </div>
         </div>
 
@@ -69,7 +69,7 @@
 
                 <!-- Back to Game Button -->
                 <div class="flex justify-center mt-8">
-                    <a href="index.html">
+                    <a href="{{ url_for('index') }}">
                         <div class="p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition">
                             Back to Home
                         </div>
