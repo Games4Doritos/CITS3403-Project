@@ -1,81 +1,86 @@
-<html>
-    <head>
-        <title>Game Name - Leaderboard</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='globals.css')}}">
-        <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body class="bg-[var(--background)] min-h-screen">
-        <!-- Navbar (exact same as other pages) -->
-        <div class="bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] fixed w-full z-10">
-            <div>
-                <a href="{{ url_for('index') }}">Home</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Name - Leaderboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="globals.css">
+</head>
+<body class="bg-[var(--background)] min-h-screen text-white">
+
+    <div class="bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] fixed w-full z-10">
+        <div>
+            <a href="index.html">Home</a>
+        </div>
+        <div class="ml-auto px-2">
+            <a href="login.html">Login</a>
+        </div>
+        <div class="px-2">
+            <a href="signup.html">Sign Up</a>
+        </div>
+    </div>
+
+    <section class="w-full flex justify-center items-center pt-24 py-7 px-6">
+        <div class="w-full max-w-3xl rounded-3xl border border-[var(--primary)] bg-[rgba(255,255,255,0.02)] p-8 shadow-[0_0_1.2rem_var(--secondary)]">
+            
+            <h1 class="text-center text-5xl text-[var(--primary)] mb-3" 
+                style="text-shadow: 0 0 3rem var(--secondary), 0 0 2rem var(--primary);">
+                Leaderboard
+            </h1>
+            <p class="text-center text-[var(--secondary)] mb-8" 
+               style="text-shadow: 0 0 2rem var(--secondary), 0 0 1rem var(--primary);">
+                Top players worldwide
+            </p>
+
+            <div class="space-y-3">
+                <div class="flex border-b border-[var(--primary)] pb-3 opacity-60 px-3 text-sm">
+                    <div class="w-16 text-[var(--primary)] font-bold">Rank</div>
+                    <div class="flex-1 text-[var(--primary)] font-bold">Player</div>
+                    <div class="w-24 text-right text-[var(--primary)] font-bold">Score</div>
+                </div>
+
+                <div class="flex items-center p-3 rounded-2xl border border-yellow-500/50 bg-yellow-500/5 backdrop-brightness-125 shadow-[0_0_1rem_rgba(234,179,8,0.2)]">
+                    <div class="w-16 text-yellow-400 text-xl"><i class="fa fa-trophy"></i> 1</div>
+                    <div class="flex-1 text-white font-bold">Player123</div>
+                    <div class="w-24 text-right text-yellow-400 font-bold">9999</div>
+                </div>
+
+                <div class="flex items-center p-3 rounded-2xl border border-slate-400/50 bg-slate-400/5 backdrop-brightness-110">
+                    <div class="w-16 text-slate-300 text-lg">2</div>
+                    <div class="flex-1 text-white font-semibold">GamerPro</div>
+                    <div class="w-24 text-right text-slate-300 font-semibold">8765</div>
+                </div>
+
+                <div class="flex items-center p-3 rounded-2xl border border-amber-700/50 bg-amber-700/5 backdrop-brightness-110">
+                    <div class="w-16 text-amber-600 text-lg">3</div>
+                    <div class="flex-1 text-white font-semibold">SpeedRunner</div>
+                    <div class="w-24 text-right text-amber-600 font-semibold">7543</div>
+                </div>
+
+                <div class="flex items-center p-3 rounded-2xl border border-[var(--primary)] bg-transparent backdrop-brightness-110">
+                    <div class="w-16 text-[var(--secondary)]">4</div>
+                    <div class="flex-1 text-white/80">JumpMaster</div>
+                    <div class="w-24 text-right text-white/80">6420</div>
+                </div>
+
+                <div class="flex items-center p-3 rounded-2xl border border-[var(--primary)] bg-transparent backdrop-brightness-110">
+                    <div class="w-16 text-[var(--secondary)]">5</div>
+                    <div class="flex-1 text-white/80">HighScore99</div>
+                    <div class="w-24 text-right text-white/80">5321</div>
+                </div>
             </div>
-            <div class="ml-auto px-2">
-                <a href="{{ url_for('login') }}">Login</a>
-            </div>
-            <div class="px-2">
-                <a href="{{ url_for('signup') }}">Sign Up</a>
+
+            <div class="flex justify-center mt-8">
+                <a href="index.html">
+                    <div class="px-8 py-3 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-black font-bold shadow-[0_0_1rem_var(--secondary)] transition cursor-pointer">
+                        Back to Home
+                    </div>
+                </a>
             </div>
         </div>
+    </section>
 
-        <!-- Leaderboard Section -->
-        <section class="w-full flex justify-center items-center py-20 px-6">
-            <div class="w-full max-w-3xl rounded-3xl border border-[var(--primary)] bg-[rgba(255,255,255,0.02)] p-8 shadow-[0_0_1.2rem_var(--secondary)]">
-                <h1 class="text-center text-4xl text-[var(--primary)] mb-3">Leaderboard</h1>
-                <p class="text-center text-[var(--secondary)] mb-8">
-                    Top players worldwide
-                </p>
-
-                <!-- Leaderboard Table -->
-                <div class="space-y-3">
-                    <!-- Header Row -->
-                    <div class="flex border-b border-[var(--primary)] pb-3">
-                        <div class="w-16 text-[var(--primary)]">Rank</div>
-                        <div class="flex-1 text-[var(--primary)]">Player</div>
-                        <div class="w-24 text-right text-[var(--primary)]">Score</div>
-                    </div>
-
-                    <!-- Sample Player Rows -->
-                    <div class="flex p-3 rounded-2xl border border-[var(--primary)] bg-transparent">
-                        <div class="w-16 text-[var(--secondary)]">1</div>
-                        <div class="flex-1 text-white">Player123</div>
-                        <div class="w-24 text-right text-white">9999</div>
-                    </div>
-
-                    <div class="flex p-3 rounded-2xl border border-[var(--primary)] bg-transparent">
-                        <div class="w-16 text-[var(--secondary)]">2</div>
-                        <div class="flex-1 text-white">GamerPro</div>
-                        <div class="w-24 text-right text-white">8765</div>
-                    </div>
-
-                    <div class="flex p-3 rounded-2xl border border-[var(--primary)] bg-transparent">
-                        <div class="w-16 text-[var(--secondary)]">3</div>
-                        <div class="flex-1 text-white">SpeedRunner</div>
-                        <div class="w-24 text-right text-white">7543</div>
-                    </div>
-
-                    <div class="flex p-3 rounded-2xl border border-[var(--primary)] bg-transparent">
-                        <div class="w-16 text-[var(--secondary)]">4</div>
-                        <div class="flex-1 text-white">JumpMaster</div>
-                        <div class="w-24 text-right text-white">6420</div>
-                    </div>
-
-                    <div class="flex p-3 rounded-2xl border border-[var(--primary)] bg-transparent">
-                        <div class="w-16 text-[var(--secondary)]">5</div>
-                        <div class="flex-1 text-white">HighScore99</div>
-                        <div class="w-24 text-right text-white">5321</div>
-                    </div>
-                </div>
-
-                <!-- Back to Game Button -->
-                <div class="flex justify-center mt-8">
-                    <a href="{{ url_for('index') }}">
-                        <div class="p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition">
-                            Back to Home
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </section>
-    </body>
+</body>
 </html>
