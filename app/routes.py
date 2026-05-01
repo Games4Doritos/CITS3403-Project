@@ -1,17 +1,27 @@
-from flask import render_template
+from flask import render_template, request, redirect, url_for
 from app import app
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/login')
-def login():
-    return render_template('login.html')
+@app.route('/auth')
+def auth():
+    return render_template('auth.html')
 
-@app.route('/signup')
+@app.route('/login', methods=['POST'])
+def login():
+    # to-do: handle login later
+    print("Login submitted")
+    return redirect(url_for('index'))# assume logged in successfully
+
+
+@app.route('/signup', methods=['POST'])
 def signup():
-    return render_template('signup.html')
+    # to-do: handle sign up later
+    print("Signup submitted")
+    return redirect(url_for('auth', mode='signup'))
+
 
 @app.route('/play')
 def play():
