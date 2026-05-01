@@ -7,3 +7,10 @@ __pycache__/
 
 # Environment Variables
 .env
+
+# Flask
+instance/
+.webassets-cache
+
+# macOS
+.DS_Store
