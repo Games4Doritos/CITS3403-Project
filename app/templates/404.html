@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Name - 404 Error</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/globals.css">
+</head>
+<body class="bg-[var(--background)] min-h-screen text-white flex flex-col">
+
+    <div class="bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] fixed w-full z-10 top-0">
+        <div>
+            <a href="index.html">Home</a>
+        </div>
+        <div class="ml-auto px-2">
+            <a href="login.html">Login</a>
+        </div>
+        <div class="px-2">
+            <a href="signup.html">Sign Up</a>
+        </div>
+    </div>
+
+    <section class="flex-grow flex justify-center items-center px-6 pt-24 pb-12">
+        <div class="text-center w-full max-w-2xl p-12 rounded-3xl border border-red-500/40 bg-red-500/5 shadow-[0_0_3rem_rgba(239,68,68,0.15)] backdrop-brightness-110">
+            
+            <h1 class="text-9xl font-black text-red-500 mb-2 tracking-widest" 
+                style="text-shadow: 0 0 4rem rgba(239,68,68,0.8), 0 0 2rem rgba(239,68,68,0.4);">
+                404
+            </h1>
+            
+            <h2 class="text-3xl font-bold text-[var(--primary)] mb-6" 
+                style="text-shadow: 0 0 1.5rem var(--secondary);">
+                <i class="fa fa-exclamation-triangle mr-2 text-red-400"></i> Player Out of Bounds
+            </h2>
+            
+            <p class="text-lg text-[var(--secondary)] mb-10 max-w-md mx-auto"
+               style="text-shadow: 0 0 1rem rgba(129, 140, 248, 0.5);">
+                The level you are trying to reach doesn't exist, has been moved, or you just found a glitch in the matrix.
+            </p>
+
+            <a href="index.html" class="inline-block group">
+                <div class="px-10 py-4 bg-[var(--primary)] group-hover:scale-105 rounded-2xl text-xl text-[#0f172a] font-bold shadow-[0_0_1.5rem_var(--primary)] group-hover:shadow-[0_0_2.5rem_var(--primary)] transition-all duration-300">
+                    <i class="fa fa-reply mr-2"></i> Respawn at Home
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+</body>
+</html>
