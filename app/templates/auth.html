@@ -1,0 +1,121 @@
+<html>
+    <head>
+        <title>Game Name - Login</title>
+        <link rel="stylesheet" href="{{url_for('static', filename='globals.css')}}">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="{{url_for('static', filename='auth.js')}}"></script>
+
+    </head>
+
+    <body class="bg-[var(--background)] min-h-screen">
+        <!-- Navbar-->
+        <div class="bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] fixed w-full z-10">
+            <div>
+                <a href="{{url_for('index')}}">Home</a>
+            </div>
+            <div class="ml-auto px-2">
+                <a href="{{url_for('auth')}}">My Account</a>
+            </div>
+        </div>
+
+        <!-- Login/Sign up Section-->
+        <section  class="w-full flex justify-center items-center py-20 px-6">
+             <div class="w-full max-w-md rounded-3xl border border-[var(--primary)] bg-[rgba(255,255,255,0.02)] p-8 shadow-[0_0_1.2rem_var(--secondary)]">
+                <h1 id="auth_title" class="text-center text-4xl text-[var(--primary)] mb-3">Welcome Back</h1>
+                <p id="auth_subtitle" class="text-center text-[var(--secondary)] mb-8">
+                    Continue your game and view your scores
+                </p>
+
+                <div class="relative flex mb-6 border-b">
+                    <button  id="login_btn" class="w-1/2 py-2 font-semibold">
+                        Log In
+                    </button>
+                    <button  id="signup_btn" class="w-1/2 py-2 text-gray-500">
+                        Sign Up
+                    </button>
+
+                    <div id="tab-underline"
+                        class="absolute bottom-0 left-0 w-1/2 h-1 border-b-2 border-blue-500 transition-all duration-300">
+                    </div>
+                </div>
+
+                <!--Login Form-->
+                <form class="space-y-5" id="login_form" action="{{url_for('login')}}" method="POST">
+                    <div>
+                    <label class="block text-[var(--primary)] mb-2">Email</label>
+                    <input
+                        type="email"
+                        placeholder="Enter your email"
+                        required
+                        class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]"
+                    >
+                    </div>
+
+                    <div>
+                    <label class="block text-[var(--primary)] mb-2">Password</label>
+                    <input
+                        type="password"
+                        placeholder="Enter your password"
+                        required
+                        class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]"
+                    >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                    >
+                    Log In
+                    </button>
+
+                </form>
+
+                <!--Sign Up Form-->
+                <form class="space-y-5" id="signup_form" action="{{ url_for('signup') }}" method="POST">
+                    <div>
+                        <label class="block text-[var(--primary)] mb-2">Email</label>
+                        <input
+                            type="email"
+                            required
+                            placeholder="Enter your email"
+                            class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-[var(--primary)] mb-2">Password</label>
+                        <input
+                            type="password"
+                            id = "password"
+                            placeholder="Create your password"
+                            required
+                            minlength="6"
+                            class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-[var(--primary)] mb-2">Confirm Your Password</label>
+                        <input
+                            type="password"
+                            id = "confirmpassword"
+                            placeholder="Confirm your password"
+                            required
+                            class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]"
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                    >
+                        Sign Up
+                    </button>
+
+                </form>
+             </div>
+        </section>
+
+    </body>
+
+</html>
