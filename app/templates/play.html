@@ -3,5 +3,33 @@
         <title>Game Name - Play</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='globals.css')}}">
         <script src="https://cdn.tailwindcss.com"></script>
+        <script src="{{ url_for('static', filename='game.js')}}" defer></script>
     </head>
+    <body>
+        <div class = "bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] fixed w-full z-10">
+            <div class="">
+                <a href="{{ url_for('index') }}">
+                    Home
+                </a>
+            </div>
+            <div class="ml-auto px-2">
+                <a href="{{ url_for('login') }}">
+                    Login
+                </a>
+            </div>
+            <div class="px-2">
+                <a href="{{ url_for('signup') }}">
+                    Sign Up
+                </a>
+            </div>
+        </div>
+        <div class="items-center flex justify-center h-[100vh]">
+            <div class="aspect-9/5">
+                <canvas id="gameCanvas" height="500" width="900"></canvas>
+            </div>
+        </div>
+        
+
+
+    </body>
 </html>
