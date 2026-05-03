@@ -5,8 +5,10 @@ venv/
 __pycache__/
 *.pyc
 
-# Environment Variables
+# Environment Variables (keeping .env.example for secret key template)
 .env
+.env.*
+!.env.example
 
 # Flask
 instance/
@@ -14,3 +16,6 @@ instance/
 
 # macOS
 .DS_Store
+
+# Database
+*.db
