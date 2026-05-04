@@ -4,6 +4,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='globals.css')}}">
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="{{ url_for('static', filename='game.js')}}" defer></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
         <div class = "bg-[var(--background)] border-b border-b-[var(--primary)] flex p-5 text-[var(--primary)] fixed w-full z-10">
@@ -23,9 +24,17 @@
                 </a>
             </div>
         </div>
-        <div class="items-center flex justify-center h-[100vh]">
-            <div class="aspect-9/5">
-                <canvas id="gameCanvas" height="500" width="900"></canvas>
+        <div class="items-center flex justify-center h-screen">
+            <div class="shadow-[0_0_2rem_var(--secondary)] rounded-3xl h-[500px] w-[900px]">
+                <div class="relative ml-[92.5%]">
+                    <div class="absolute p-2 rounded-xl m-2 z-10">
+                        <button class="" onclick="pauseButton()">
+                            <i class="fa fa-pause" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                <canvas id="gameCanvas" class="absolute" height="500" width="900"></canvas>
+                <canvas id="playerCanvas" class="absolute" height="500" width="900"></canvas>
             </div>
         </div>
         

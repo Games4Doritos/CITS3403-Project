@@ -1,35 +1,47 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-canvas.width = canvas.clientWidth;
-canvas.height = canvas.clientHeight;
+const gameCanvas = document.getElementById('gameCanvas');
+const playerCanvas = document.getElementById('playerCanvas');
+const gameCtx = gameCanvas.getContext('2d');
+const playerCtx = playerCanvas.getContext('2d');
+
+gameCanvas.width = gameCanvas.clientWidth;
+gameCanvas.height = gameCanvas.clientHeight;
+playerCanvas.width = playerCanvas.clientWidth;
+playerCanvas.height = playerCanvas.clientHeight;
 
 
 class player{
     constructor(){
-        this.y = canvas.height/2;
-        this.dy = 0;
+        this.y = playerCanvas.height/2;
         this.sprite = new Image();
         this.sprite.src = "/static/assets/play.png";
-        this.jumpMemory = 0;
+        this.jumpMemory = -1;
+        this.lastTime = performance.now();
     }
     draw(context){
-        context.drawImage(this.sprite,canvas.width/2,this.y,50,50);
+        context.drawImage(this.sprite,playerCanvas.width/2,this.y,50,50);
     }
     update(context){
-        if (this.jumpMemory >0){
-            //velocity will start at -15, decelerate to 0, then accelerate to 15 (standard parabolic jump)
-            this.y -= this.jumpMemory - 15
+        const now = performance.now();
+        /*Calculation justification:
+        Raw now-lastTime is in milliseconds hence * 0.001
+        To converge towards 60fps since fps isn't always consistent, * 60 as 
+        ideally the field will be updated 60 times per second
+        */
+        const deltaTime = (now - this.lastTime) * 0.06;
+        this.lastTime = now;
+
+        if (this.jumpMemory >-1){
+            //velocity will start at -12, decelerate to 0, then accelerate to 12 (standard parabolic jump)
+            this.y -= (this.jumpMemory - 12) ;
             this.jumpMemory--;
-            if (this.jumpMemory === 0){
-                this.y += 15;
-            }
+            
         }
         
         this.draw(context);
     }
     jump(){
-        if (this.jumpMemory == 0){
-            this.jumpMemory = 30; 
+        if (this.jumpMemory == -1){
+            this.jumpMemory = 24; 
         }
     }
 }
@@ -40,15 +52,16 @@ class obstacle{
     }
     constructor(type, yState){
         if (yState === "sky"){
-            this.y = canvas.height/2 - 100;
+            this.y = gameCanvas.height/2 - 100;
         }
         else if (yState === "ground"){
-            this.y = canvas.height/2;
+            this.y = gameCanvas.height/2;
         }
-        this.x = canvas.width + 50;
+        this.x = gameCanvas.width + 50;
         this.sprite = new Image();
         this.sprite.src = "/static/assets/random.png";
         this.alive = true;
+        this.lastTime = performance.now();
     }
     draw(context){
         context.drawImage(this.sprite,this.x,this.y,50,50);
@@ -57,7 +70,15 @@ class obstacle{
         if (this.x < -50){
             this.alive = false;
         }
-        this.x -= (canvas.width + 100)*obstacle.lifetime;
+        const now = performance.now();
+        /*Calculation justification:
+        Raw now-lastTime is in milliseconds hence * 0.001
+        To converge towards 60fps since fps isn't always consistent, * 60 as 
+        ideally the field will be updated 60 times per second
+        */
+        const deltaTime = (now - this.lastTime)*0.06;
+        this.lastTime = now;
+        this.x -= (gameCanvas.width + 100)*obstacle.lifetime *deltaTime;
         this.draw(context);
     }
 
@@ -66,21 +87,17 @@ class obstacle{
 curPlayer = new player();
 let objCount = 0;
 const obstacles = [];
+let animationID;
+let running = true;
 
 let runStart = performance.now();
 let lastTime = performance.now();
+let pausedTime = bigInt(0);
 
 function frame(){
-    const now = performance.now();
-    const deltaTime = now - lastTime;
-    const runDuration = now - runStart;
-    lastTime = now;
-
-    
     let count = 0;
-    if (runDuration < 180000){
-            obstacle.lifetime = 1/128 + runDuration * 0.0000001;
-        }
+    gameCanvas.width = gameCanvas.clientWidth;
+    gameCanvas.height = gameCanvas.clientHeight;
 
     obstacles.forEach(obs =>{
         if (!obs.alive){
@@ -100,7 +117,7 @@ function frame(){
         }
         objCount++;
     }
-    else if (objCount < 5 && Math.random() < 0.1 && obstacles[obstacles.length-1].x < canvas.width -200){
+    else if (objCount < 5 && Math.random() < 0.1 && obstacles[obstacles.length-1].x < gameCanvas.width -200){
         
         
         if (Math.random() < 0.5){
@@ -111,20 +128,60 @@ function frame(){
         }
         objCount++;
     }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
+    gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+    playerCtx.clearRect(0, 0, playerCanvas.width, playerCanvas.height);
 
-    
-    curPlayer.update(ctx);
+    const now = performance.now();
+    const deltaTime = now - lastTime;
+    const runDuration = now - runStart - pausedTime;
+    console.log(pausedTime, runDuration, obstacle.lifetime);
+    lastTime = now;
+
+    if (runDuration < 180000){
+        /* Can also do obstacle.lifetime = 1/128 + runDuration * 0.00000005
+        as all deltaTimes will sum up to runDuration
+        */
+            obstacle.lifetime += deltaTime * 0.00000005;
+    }
+    curPlayer.update(playerCtx);
     obstacles.forEach(obs =>{
-        obs.update(ctx);
+        obs.update(gameCtx);
     });
-    requestAnimationFrame(frame);
+    if (running){
+        animationID =requestAnimationFrame(frame);
+    }
+    
 
 }
-curPlayer.draw(ctx);
-frame();
+
+function start(){
+    running = false;
+}
+
+function stop(){
+
+}
+
+function pauseButton(){
+    if (running){
+        lastTime = performance.now();
+        cancelAnimationFrame(animationID);
+        running = false;
+    }
+    else {
+        curPlayer.lastTime = performance.now();
+        obstacles.forEach(obs => {
+            obs.lastTime = performance.now();
+        });
+        pausedTime += performance.now() - lastTime;
+        lastTime = performance.now();
+        animationID = requestAnimationFrame(frame);
+        running = true;
+    }
+}
+
+
+animationID = requestAnimationFrame(frame);
 window.addEventListener('keypress', (event) => {
     if (event.code === 'Space') {
         curPlayer.jump();
