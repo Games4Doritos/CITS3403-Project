@@ -27,8 +27,8 @@ document.addEventListener("DOMContentLoaded", function(){
         authSubtilte.textContent = "Continue your game and view your scores";
 
         // button styling
-        loginBtn.className = "block w-1/2 py-2 text-center font-semibold text-white";
-        signupBtn.className = "block w-1/2 py-2 text-center text-gray-500";
+        loginBtn.className = "block w-1/2 py-2 text-center font-semibold text-purple-200";
+        signupBtn.className = "block w-1/2 py-2 text-center text-purple-400 opacity-60";
 
         // sliding bar position
         underline.style.left = "0";
@@ -46,8 +46,8 @@ document.addEventListener("DOMContentLoaded", function(){
         authSubtilte.textContent = "Save your scores and compete on the leaderboard";
 
         // button styling
-        signupBtn.className = "block w-1/2 py-2 text-center font-semibold text-white";
-        loginBtn.className = "block w-1/2 py-2 text-center text-gray-500";
+        signupBtn.className = "block w-1/2 py-2 text-center font-semibold text-purple-200";
+        loginBtn.className = "block w-1/2 py-2 text-center text-purple-400 opacity-60";
 
         // sliding bar position
         underline.style.left = "50%";
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function(){
     const params = new URLSearchParams(window.location.search);
     const mode = params.get("mode");
 
-    if (mode === "signup") {
+    if (initialMode === "signup" || mode === "signup") {
         displaySignup();
     } else {
         displayLogin(); //default
