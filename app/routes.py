@@ -1,27 +1,52 @@
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash
 from app import app
+from app.forms import LoginForm, SignupForm
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/auth')
+@app.route('/auth', methods=['GET', 'POST'])
 def auth():
-    return render_template('auth.html')
+    login_form = LoginForm()
+    signup_form = SignupForm()
 
-@app.route('/login', methods=['POST'])
-def login():
-    # to-do: handle login later
-    print("Login submitted")
-    return redirect(url_for('index'))# assume logged in successfully
+    if request.method == 'POST':
+        form_type = request.form.get('form_type')
+        
+        if form_type == "signup":
+            if signup_form.validate():
+                print("Signup valid")
+                flash("Account created successfully. Please log in.")
+                # To do later: save new player account
+                return redirect(url_for("auth"))
+            else:
+                print(signup_form.errors)
+                return render_template(
+                    "auth.html",
+                    login_form=login_form,
+                    signup_form=signup_form,
+                    mode="signup" # to still display signup form
+                )
 
+        if form_type == "login":
+            if login_form.validate():
+                print("Login valid")
+                # To do later: log in player
+                return redirect(url_for("index"))
+            else:
+                print(login_form.errors)
+                return render_template(
+                    "auth.html",
+                    login_form=login_form,
+                    signup_form=signup_form,
+                )
 
-@app.route('/signup', methods=['POST'])
-def signup():
-    # to-do: handle sign up later
-    print("Signup submitted")
-    return redirect(url_for('auth', mode='signup'))
-
+    return render_template(
+        'auth.html',
+        login_form=login_form,
+        signup_form=signup_form
+    )
 
 @app.route('/play')
 def play():
@@ -34,3 +59,7 @@ def leaderboard():
 @app.route('/profile')
 def profile():
     return render_template('profile.html')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404

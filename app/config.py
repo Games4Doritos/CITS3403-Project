@@ -14,3 +14,6 @@ class Config:
 
     # disable unnecessary tracking to improve performance
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
+
+    # enable CSRF protection for forms
+    WTF_CSRF_ENABLED = True
