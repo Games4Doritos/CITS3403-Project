@@ -1,7 +1,60 @@
-<html>
-    <head>
-        <title>Game Name - Play</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='globals.css')}}">
-        <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Game Name - Play{% endblock %}
+
+{% block extra_head %}
+    <script src="{{ url_for('static', filename='game.js')}}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock %}
+
+{% block content %}s
+    <div class="items-center flex justify-center h-screen">
+        <div class="shadow-[0_0_2rem_var(--secondary)] rounded-3xl h-[500px] w-[900px] shrink-0">
+            <!--End Run Screen-->
+            <div class="absolute w-[900px] h-[500px] hidden items-center justify-center z-10 backdrop-brightness-[80%] rounded-3xl" id="end">
+                <div>
+                    <h1 class="text-5xl text-[var(--primary)] py-5">
+                        Run ended!
+                    </h1>
+                    <h2 class="text-2xl text-[var(--primary)]">
+                        Your Stats:
+                    </h2>
+                    <h3 class="text-xl hidden"  id="finalTime">
+                        Final Time: 0 seconds
+                    </h3>
+                    <h3 class="text-xl hidden" id="totalJumps">
+                        Total Jumps: 0
+                    </h3>
+                    <h3 class="text-xl hidden" id="totalScore">
+                        Total Score: 0
+                    </h3>
+                </div>
+
+            </div>
+            <!-- UI for the game(score, multiplier, pause button)-->
+            <div class="relative w-full">
+                <div class="absolute p-4 text-2xl text-[var(--primary)]" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
+                    <h2 class="block pb-1">
+                        Score <span id="score">000011</span>
+                    </h2>
+                    <div class="border border-[var(--primary)]">
+                    </div>
+                    <h2 class="block">
+                        x<span id="multiplier">1</span>
+                    </h2>
+                </div>
+                <div class="relative ml-[92.5%]">
+                    <div class="absolute p-2 rounded-xl m-2 z-10 text-[var(--primary)] text-xl" id="pauseButton">
+                        <button onclick="pauseButton()">
+                            <i class="fa fa-pause" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- The two canvases that display the game, one for just the player and one for the rest of the game-->
+            <canvas id="gameCanvas" class="absolute" height="500" width="900"></canvas>
+            <canvas id="playerCanvas" class="absolute" height="500" width="900"></canvas>
+        </div>
+    </div>
+{% endblock %}
