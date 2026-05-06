@@ -16,6 +16,7 @@ class player{
         this.sprite.src = "/static/assets/play.png";
         this.jumpMemory = -1;
         this.lastTime = performance.now();
+        this.jumpCount = BigInt(0);
     }
     draw(context){
         context.drawImage(this.sprite,playerCanvas.width/2,this.y,50,50);
@@ -41,6 +42,7 @@ class player{
     }
     jump(){
         if (this.jumpMemory == -1){
+            this.jumpCount++;
             this.jumpMemory = 24; 
         }
     }
@@ -91,8 +93,12 @@ let animationID;
 let running = true;
 
 let runStart = performance.now();
-let lastTime = performance.now();
-let pausedTime = bigInt(0);
+let lastTime = runStart;
+let pausedTime = 0.00;
+let finalRunDuration;
+
+let dead = false;
+const end = document.getElementById("end");
 
 function frame(){
     let count = 0;
@@ -110,10 +116,10 @@ function frame(){
     }
     if (objCount === 0){
         if (Math.random() < 0.5){
-            obstacles.push(new obstacle("gay", "ground"));
+            obstacles.push(new obstacle("idk", "ground"));
         }
         else{
-            obstacles.push(new obstacle("gay", "sky"));
+            obstacles.push(new obstacle("idk", "sky"));
         }
         objCount++;
     }
@@ -121,10 +127,10 @@ function frame(){
         
         
         if (Math.random() < 0.5){
-            obstacles.push(new obstacle("gay", "ground"));
+            obstacles.push(new obstacle("idk", "ground"));
         }
         else{
-            obstacles.push(new obstacle("gay", "sky"));
+            obstacles.push(new obstacle("idk", "sky"));
         }
         objCount++;
     }
@@ -134,7 +140,7 @@ function frame(){
     const now = performance.now();
     const deltaTime = now - lastTime;
     const runDuration = now - runStart - pausedTime;
-    console.log(pausedTime, runDuration, obstacle.lifetime);
+    console.log(1000/deltaTime);
     lastTime = now;
 
     if (runDuration < 180000){
@@ -153,16 +159,35 @@ function frame(){
     
 
 }
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-function start(){
-    running = false;
+async function end(){
+    if (dead){
+        return;
+    }
+    //rounds it to two decimal places in milliseconds
+    finalRunDuration = Number(Math.round(performance.now() - runStart + 'e' + 2) + 'e-' + 2);
+    cancelAnimationFrame(animationID);
+    dead = true;
+    const finalTime = document.getElementById("finalTime");
+    const totalJumps = document.getElementById("totalJumps");
+    const totalScore = document.getElementById("totalScore");
+    finalTime.textContent = `Final Time: ${(finalRunDuration*0.001).toFixed(2)} Seconds`;
+    totalJumps.textContent = `Total Jumps: ${curPlayer.jumpCount}`;
+    totalScore.textContent = `Total Score: ${1}`;
+    end.style.display = "flex";
+    await wait(1000);
+    finalTime.style.display = "block";
+    await wait(500);
+    totalJumps.style.display = "block";
+    await wait(500);
+    totalScore.style.display = "block";
 }
-
-function stop(){
-
-}
-
 function pauseButton(){
+    if (dead){
+        return;
+        
+    }
     if (running){
         lastTime = performance.now();
         cancelAnimationFrame(animationID);
