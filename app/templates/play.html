@@ -9,7 +9,8 @@
 
 {% block content %}s
     <div class="items-center flex justify-center h-screen">
-        <div class="shadow-[0_0_2rem_var(--secondary)] rounded-3xl h-[500px] w-[900px]">
+        <div class="shadow-[0_0_2rem_var(--secondary)] rounded-3xl h-[500px] w-[900px] shrink-0">
+            <!--End Run Screen-->
             <div class="absolute w-[900px] h-[500px] hidden items-center justify-center z-10 backdrop-brightness-[80%] rounded-3xl" id="end">
                 <div>
                     <h1 class="text-5xl text-[var(--primary)] py-5">
@@ -28,24 +29,36 @@
                         Total Score: 0
                     </h3>
                 </div>
-                
 
             </div>
+            <!-- UI for the game(score, multiplier, pause button)-->
             <div class="relative w-full">
-                <div class="absolute p-2 z-10">
-                    <button onclick="end()">
+                <div class="absolute p-4 text-2xl text-[var(--primary)]" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
+                    <h2 class="block pb-1">
+                        Score <span id="score">000011</span>
+                    </h2>
+                    <div class="border border-[var(--primary)]">
+                    </div>
+                    <h2 class="block">
+                        x<span id="multiplier">1</span>
+                    </h2>
+                </div>
+                
+                <div class="absolute p-2 z-10 ml-[20%]">
+                    <button onclick="runEnd()">
                         Die
                     </button>
                 </div>
                 <div class="relative ml-[92.5%]">
-                    <div class="absolute p-2 rounded-xl m-2 z-10">
-                        <button class="" onclick="pauseButton()">
+                    <div class="absolute p-2 rounded-xl m-2 z-10 text-[var(--primary)] text-xl">
+                        <button onclick="pauseButton()">
                             <i class="fa fa-pause" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
                 
             </div>
+            <!-- The two canvases that display the game, one for just the player and one for the rest of the game-->
             <canvas id="gameCanvas" class="absolute" height="500" width="900"></canvas>
             <canvas id="playerCanvas" class="absolute" height="500" width="900"></canvas>
         </div>

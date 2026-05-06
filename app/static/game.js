@@ -10,7 +10,14 @@ playerCanvas.height = playerCanvas.clientHeight;
 
 
 class player{
+    x;
+    y;
+    sprite;
+    jumpMemory;
+    lastTime;
+    jumpCount;
     constructor(){
+        this.x = playerCanvas.width*0.1;
         this.y = playerCanvas.height/2;
         this.sprite = new Image();
         this.sprite.src = "/static/assets/play.png";
@@ -19,7 +26,7 @@ class player{
         this.jumpCount = BigInt(0);
     }
     draw(context){
-        context.drawImage(this.sprite,playerCanvas.width/2,this.y,50,50);
+        context.drawImage(this.sprite,this.x,this.y,50,50);
     }
     update(context){
         const now = performance.now();
@@ -49,10 +56,16 @@ class player{
 }
 
 class obstacle{
+    y;
+    x;
+    sprite;
+    alive;
+    lastTime;
     static {
         this.lifetime = 1/128;
     }
     constructor(type, yState){
+        
         if (yState === "sky"){
             this.y = gameCanvas.height/2 - 100;
         }
@@ -100,6 +113,11 @@ let finalRunDuration;
 let dead = false;
 const end = document.getElementById("end");
 
+let score = 0;
+let multiplier = 1;
+const scoreElement = document.getElementById("score");
+const multiplierElement = document.getElementById("multiplier");
+
 function frame(){
     let count = 0;
     gameCanvas.width = gameCanvas.clientWidth;
@@ -134,13 +152,17 @@ function frame(){
         }
         objCount++;
     }
+    if (dead){
+        return;
+    }
     gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     playerCtx.clearRect(0, 0, playerCanvas.width, playerCanvas.height);
 
     const now = performance.now();
     const deltaTime = now - lastTime;
     const runDuration = now - runStart - pausedTime;
-    console.log(1000/deltaTime);
+    score += deltaTime * 0.1 * multiplier;
+    scoreElement.textContent = `${Math.round(score)}`;
     lastTime = now;
 
     if (runDuration < 180000){
@@ -153,20 +175,27 @@ function frame(){
     obstacles.forEach(obs =>{
         obs.update(gameCtx);
     });
+    obstacles.forEach(obs => {
+        // Checks if colliding with an obstacle at every frame -> run ends if so
+        if (Math.abs(curPlayer.x - obs.x) < 48 && Math.abs(curPlayer.y -obs.y) <  48){
+            runEnd();
+            return;
+        }
+    });
     if (running){
-        animationID =requestAnimationFrame(frame);
+        animationID = requestAnimationFrame(frame);
     }
     
-
 }
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function end(){
+async function runEnd(){
+    running = false;
     if (dead){
         return;
     }
     //rounds it to two decimal places in milliseconds
-    finalRunDuration = Number(Math.round(performance.now() - runStart + 'e' + 2) + 'e-' + 2);
+    finalRunDuration = Number(Math.round(performance.now() - runStart - pausedTime + 'e' + 2) + 'e-' + 2);
     cancelAnimationFrame(animationID);
     dead = true;
     const finalTime = document.getElementById("finalTime");
@@ -174,7 +203,7 @@ async function end(){
     const totalScore = document.getElementById("totalScore");
     finalTime.textContent = `Final Time: ${(finalRunDuration*0.001).toFixed(2)} Seconds`;
     totalJumps.textContent = `Total Jumps: ${curPlayer.jumpCount}`;
-    totalScore.textContent = `Total Score: ${1}`;
+    totalScore.textContent = `Total Score: ${Math.round(score)}`;
     end.style.display = "flex";
     await wait(1000);
     finalTime.style.display = "block";
