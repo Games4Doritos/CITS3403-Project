@@ -205,6 +205,7 @@ async function runEnd(){
     finalTime.textContent = `Final Time: ${(finalRunDuration*0.001).toFixed(2)} Seconds`;
     totalJumps.textContent = `Total Jumps: ${curPlayer.jumpCount}`;
     totalScore.textContent = `Total Score: ${Math.round(score)}`;
+    document.getElementById("pauseButton").style.display = "none";
     end.style.display = "flex";
     await wait(1000);
     finalTime.style.display = "block";
