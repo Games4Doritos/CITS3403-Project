@@ -20,13 +20,14 @@ class player{
         this.x = playerCanvas.width*0.1;
         this.y = playerCanvas.height/2;
         this.sprite = new Image();
-        this.sprite.src = "/static/assets/play.png";
+        this.sprite.src = "/static/assets/technoChicken.png";
+        //Dimensions of sprite: 60x40
         this.jumpMemory = -1;
         this.lastTime = performance.now();
         this.jumpCount = BigInt(0);
     }
     draw(context){
-        context.drawImage(this.sprite,this.x,this.y,50,50);
+        context.drawImage(this.sprite,this.x,this.y,40,60);
     }
     update(context){
         const now = performance.now();
