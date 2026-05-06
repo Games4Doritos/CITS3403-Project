@@ -46,7 +46,7 @@
         
         <!-- Buttons -->
         <div class="flex flex-col md:flex-row justify-center gap-4 mb-2">
-            <a href="edit-profile.html" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
+            <a href="{{ url_for ('edit_profile') }}" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
                 Edit Profile
             </a>
             <a href="{{ url_for('leaderboard') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
