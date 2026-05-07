@@ -18,7 +18,7 @@ def auth():
             if signup_form.validate():
                 print("Signup valid")
                 flash("Account created successfully. Please log in.")
-                # To do later: save new player account
+                # To do later: save new account
                 return redirect(url_for("auth"))
             else:
                 print(signup_form.errors)
