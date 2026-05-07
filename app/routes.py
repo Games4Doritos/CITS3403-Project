@@ -54,7 +54,10 @@ def play():
 
 @app.route('/leaderboard')
 def leaderboard():
-    return render_template('leaderboard.html')
+    from app.models import GameSession
+    # Get top 10 scores ordered by score (highest first)
+    top_scores = GameSession.query.order_by(GameSession.score.desc()).limit(10).all()
+    return render_template('leaderboard.html', top_scores=top_scores)
 
 @app.route('/profile')
 def profile():
