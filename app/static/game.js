@@ -8,7 +8,6 @@ gameCanvas.height = gameCanvas.clientHeight;
 playerCanvas.width = playerCanvas.clientWidth;
 playerCanvas.height = playerCanvas.clientHeight;
 
-
 class player{
     x;
     y;
@@ -198,24 +197,22 @@ function frame(){
         obstacle.speed = 0.0168125;
         obstacle.spacing = 380;
     }
-    console.log(obstacle.speed, obstacle.spacing);
     curPlayer.update(playerCtx);
     obstacles.forEach(obs =>{
         
         obs.update(gameCtx);
     });
-    /*
+    
     obstacles.forEach(obs => {
         // Checks if colliding with an obstacle at every frame -> run ends if so
         if (Math.abs(curPlayer.x - obs.x) < 48 && Math.abs(curPlayer.y -obs.y) <  48){
             runEnd();
             return;
         }
-    });*/
+    });
     if (running){
         animationID = requestAnimationFrame(frame);
     }
-    
 }
 
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -230,15 +227,22 @@ async function runEnd(){
     cancelAnimationFrame(animationID);
     dead = true;
     //get final stats
+
+    const currency = Math.floor(Math.round(score) * 0.01);
+    // currency will be 1/100 of the total score, rounded down
+
     const finalTime = document.getElementById("finalTime");
     const totalJumps = document.getElementById("totalJumps");
     const totalScore = document.getElementById("totalScore");
+    const newCurrency = document.getElementById("newCurrency");
     //set final stats in appropriate elements
     finalTime.textContent = `Final Time: ${(finalRunDuration*0.001).toFixed(2)} Seconds`;
     totalJumps.textContent = `Total Jumps: ${curPlayer.jumpCount}`;
     totalScore.textContent = `Total Score: ${Math.round(score)}`;
-    document.getElementById("pauseButton").style.display = "none";
+    newCurrency.firstElementChild.textContent = `${currency}`;
+    
     //small animation
+    document.getElementById("pauseButton").style.display = "none";
     end.style.display = "flex";
     await wait(1000);
     finalTime.style.display = "block";
@@ -246,6 +250,8 @@ async function runEnd(){
     totalJumps.style.display = "block";
     await wait(500);
     totalScore.style.display = "block";
+    await wait(500);
+    newCurrency.style.display = "block";
 }
 function pauseButton(){
     if (dead){
@@ -268,7 +274,6 @@ function pauseButton(){
         running = true;
     }
 }
-
 
 animationID = requestAnimationFrame(frame);
 window.addEventListener('keypress', (event) => {
