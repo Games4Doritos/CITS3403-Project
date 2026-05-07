@@ -40,18 +40,23 @@ class player{
         this.lastTime = now;
 
         if (this.jumpMemory >-1){
-            //velocity will start at -12, decelerate to 0, then accelerate to 12 (standard parabolic jump)
-            this.y -= (this.jumpMemory - 12) ;
+            //velocity will start at -13, decelerate to 0, then accelerate to 13 (standard parabolic jump)
+            //total jump height = 0.5 * (13) *(13+1) = 78
+            this.y -= (this.jumpMemory - 13) ;
             this.jumpMemory--;
             
+        }
+        else{
+            bonusMultiplier = 0;
         }
         
         this.draw(context);
     }
     jump(){
         if (this.jumpMemory == -1){
+            bonusMultiplier = 0.5
             this.jumpCount++;
-            this.jumpMemory = 24; 
+            this.jumpMemory = 26; 
         }
     }
 }
@@ -63,7 +68,8 @@ class obstacle{
     alive;
     lastTime;
     static {
-        this.lifetime = 1/128;
+        this.speed = 1/128;
+        this.spacing = 200;
     }
     constructor(type, yState){
         
@@ -75,7 +81,7 @@ class obstacle{
         }
         this.x = gameCanvas.width + 50;
         this.sprite = new Image();
-        this.sprite.src = "/static/assets/random.png";
+        this.sprite.src = `/static/assets/${type}.png`;
         this.alive = true;
         this.lastTime = performance.now();
     }
@@ -94,7 +100,7 @@ class obstacle{
         */
         const deltaTime = (now - this.lastTime)*0.06;
         this.lastTime = now;
-        this.x -= (gameCanvas.width + 100)*obstacle.lifetime *deltaTime;
+        this.x -= (gameCanvas.width + 100)*obstacle.speed *deltaTime;
         this.draw(context);
     }
 
@@ -115,7 +121,8 @@ let dead = false;
 const end = document.getElementById("end");
 
 let score = 0;
-let multiplier = 1;
+let baseMultiplier = 1;
+let bonusMultiplier = 0;
 const scoreElement = document.getElementById("score");
 const multiplierElement = document.getElementById("multiplier");
 
@@ -135,21 +142,19 @@ function frame(){
     }
     if (objCount === 0){
         if (Math.random() < 0.5){
-            obstacles.push(new obstacle("idk", "ground"));
+            obstacles.push(new obstacle("random", "ground"));
         }
         else{
-            obstacles.push(new obstacle("idk", "sky"));
+            obstacles.push(new obstacle("random", "sky"));
         }
         objCount++;
     }
-    else if (objCount < 5 && Math.random() < 0.1 && obstacles[obstacles.length-1].x < gameCanvas.width -200){
-        
-        
+    else if (objCount < 5 && Math.random() < 0.1 && obstacles[obstacles.length-1].x < gameCanvas.width - obstacle.spacing){
         if (Math.random() < 0.5){
-            obstacles.push(new obstacle("idk", "ground"));
+            obstacles.push(new obstacle("random", "ground"));
         }
         else{
-            obstacles.push(new obstacle("idk", "sky"));
+            obstacles.push(new obstacle("random", "sky"));
         }
         objCount++;
     }
@@ -162,32 +167,57 @@ function frame(){
     const now = performance.now();
     const deltaTime = now - lastTime;
     const runDuration = now - runStart - pausedTime;
+
+    // convert baseMultiplier to seconds and divide by 20 (increases every 20 seconds)
+    // baseMultiplier maxes out at 5 - takes 800 seconds (~13 minutes) to reach
+    baseMultiplier = Number(Math.round(1 + 0.1 * Math.min(Math.floor(runDuration * 0.00005),40) + 'e' + 1) + 'e-' + 1);
+    // add baseMultiplier and bonusMultiplier together (done safely and rounded to avoid precision errors)
+    let multiplier = Number(Math.round(baseMultiplier + bonusMultiplier + 'e' + 1) + 'e-' + 1);
+    multiplierElement.textContent = `${multiplier}`;
     score += deltaTime * 0.1 * multiplier;
     scoreElement.textContent = `${Math.round(score)}`;
     lastTime = now;
 
     if (runDuration < 180000){
-        /* Can also do obstacle.lifetime = 1/128 + runDuration * 0.00000005
-        as all deltaTimes will sum up to runDuration
+        /* All cumulative delta times will not sum exactly to runDuration (practicality),
+           so max speed will be set to 0.0168125 and final min spacing will be set to 
+           to prevent differing values across devices
+
+           initial speed = 1/128
+           max speed = initial speed + 180000 * 0.00000005 = 0.0078125 + 0.09 = 0.0168125
+
+           initial min spacing = 200
+           final min spacing = 200 + 180000 * 0.001 = 380
+
+           initial 
         */
-            obstacle.lifetime += deltaTime * 0.00000005;
+        obstacle.speed += deltaTime * 0.00000005;
+        obstacle.spacing += deltaTime * 0.001;
     }
+    else {
+        obstacle.speed = 0.0168125;
+        obstacle.spacing = 380;
+    }
+    console.log(obstacle.speed, obstacle.spacing);
     curPlayer.update(playerCtx);
     obstacles.forEach(obs =>{
+        
         obs.update(gameCtx);
     });
+    /*
     obstacles.forEach(obs => {
         // Checks if colliding with an obstacle at every frame -> run ends if so
         if (Math.abs(curPlayer.x - obs.x) < 48 && Math.abs(curPlayer.y -obs.y) <  48){
             runEnd();
             return;
         }
-    });
+    });*/
     if (running){
         animationID = requestAnimationFrame(frame);
     }
     
 }
+
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function runEnd(){
@@ -199,13 +229,16 @@ async function runEnd(){
     finalRunDuration = Number(Math.round(performance.now() - runStart - pausedTime + 'e' + 2) + 'e-' + 2);
     cancelAnimationFrame(animationID);
     dead = true;
+    //get final stats
     const finalTime = document.getElementById("finalTime");
     const totalJumps = document.getElementById("totalJumps");
     const totalScore = document.getElementById("totalScore");
+    //set final stats in appropriate elements
     finalTime.textContent = `Final Time: ${(finalRunDuration*0.001).toFixed(2)} Seconds`;
     totalJumps.textContent = `Total Jumps: ${curPlayer.jumpCount}`;
     totalScore.textContent = `Total Score: ${Math.round(score)}`;
     document.getElementById("pauseButton").style.display = "none";
+    //small animation
     end.style.display = "flex";
     await wait(1000);
     finalTime.style.display = "block";
