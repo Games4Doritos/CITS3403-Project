@@ -26,35 +26,37 @@
                 <div class="w-24 text-right text-[var(--primary)] font-bold">Score</div>
             </div>
 
-            <div class="flex items-center p-3 rounded-2xl border border-yellow-500/50 bg-yellow-500/5 backdrop-brightness-125 shadow-[0_0_1rem_rgba(234,179,8,0.2)]">
-                <div class="w-16 text-yellow-400 text-xl"><i class="fa fa-trophy"></i> 1</div>
-                <div class="flex-1 text-white font-bold">Player123</div>
-                <div class="w-24 text-right text-yellow-400 font-bold">9999</div>
+            {% for game in top_scores %}
+            <div class="flex items-center p-3 rounded-2xl border 
+                {% if loop.index == 1 %}border-yellow-500/50 bg-yellow-500/5 backdrop-brightness-125 shadow-[0_0_1rem_rgba(234,179,8,0.2)]
+                {% elif loop.index == 2 %}border-slate-400/50 bg-slate-400/5 backdrop-brightness-110
+                {% elif loop.index == 3 %}border-amber-700/50 bg-amber-700/5 backdrop-brightness-110
+                {% else %}border-[var(--primary)] bg-transparent backdrop-brightness-110{% endif %}">
+                
+                <div class="w-16 
+                    {% if loop.index == 1 %}text-yellow-400 text-xl
+                    {% elif loop.index == 2 %}text-slate-300 text-lg
+                    {% elif loop.index == 3 %}text-amber-600 text-lg
+                    {% else %}text-[var(--secondary)]{% endif %}">
+                    {% if loop.index == 1 %}<i class="fa fa-trophy"></i> {% endif %}{{ loop.index }}
+                </div>
+                
+                <div class="flex-1 
+                    {% if loop.index <= 2 %}text-white font-bold
+                    {% elif loop.index == 3 %}text-white font-semibold
+                    {% else %}text-white/80{% endif %}">
+                    {{ game.player.email.split('@')[0] }}
+                </div>
+                
+                <div class="w-24 text-right 
+                    {% if loop.index == 1 %}text-yellow-400 font-bold
+                    {% elif loop.index == 2 %}text-slate-300 font-semibold
+                    {% elif loop.index == 3 %}text-amber-600 font-semibold
+                    {% else %}text-white/80{% endif %}">
+                    {{ game.score }}
+                </div>
             </div>
-
-            <div class="flex items-center p-3 rounded-2xl border border-slate-400/50 bg-slate-400/5 backdrop-brightness-110">
-                <div class="w-16 text-slate-300 text-lg">2</div>
-                <div class="flex-1 text-white font-semibold">GamerPro</div>
-                <div class="w-24 text-right text-slate-300 font-semibold">8765</div>
-            </div>
-
-            <div class="flex items-center p-3 rounded-2xl border border-amber-700/50 bg-amber-700/5 backdrop-brightness-110">
-                <div class="w-16 text-amber-600 text-lg">3</div>
-                <div class="flex-1 text-white font-semibold">SpeedRunner</div>
-                <div class="w-24 text-right text-amber-600 font-semibold">7543</div>
-            </div>
-
-            <div class="flex items-center p-3 rounded-2xl border border-[var(--primary)] bg-transparent backdrop-brightness-110">
-                <div class="w-16 text-[var(--secondary)]">4</div>
-                <div class="flex-1 text-white/80">JumpMaster</div>
-                <div class="w-24 text-right text-white/80">6420</div>
-            </div>
-
-            <div class="flex items-center p-3 rounded-2xl border border-[var(--primary)] bg-transparent backdrop-brightness-110">
-                <div class="w-16 text-[var(--secondary)]">5</div>
-                <div class="flex-1 text-white/80">HighScore99</div>
-                <div class="w-24 text-right text-white/80">5321</div>
-            </div>
+            {% endfor %}
         </div>
 
         <div class="flex justify-center mt-8">

@@ -17,15 +17,6 @@
             Continue your game and view your scores
         </p>
 
-        <!-- Display latest flash message -->
-        <div class="mb-4">
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <p class="text-green-400 text-sm">{{ messages[-1] }}</p>
-                {% endif %}
-            {% endwith %}
-        </div>
-
         <div class="relative flex mb-6 border-b">
             <button id="login_btn" class="w-1/2 py-2 font-semibold">
                 Log In
@@ -42,6 +33,20 @@
         <!--Login Form-->
         <form id="login_form" class="space-y-5" method="POST">
             {{ login_form.hidden_tag() }} <!-- CSRF protection token -->
+
+            <!--flasing messages for validation result-->
+            <div class="mb-4">
+            {% with flash_message = get_flashed_messages(with_categories=true)[-1] %}
+                {% if flash_message %}
+                    {% set category, message = flash_message %}
+                    {% if category == "login_error" %}
+                        <p class="text-red-400 text-sm">{{ message }}</p>
+                    {% elif category == "signup_success" %}
+                        <p class="text-green-400 text-sm">{{ message}}</p>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+            </div>
 
             <div>
                 <label class="block text-[var(--primary)] mb-2">Email</label>
@@ -75,6 +80,21 @@
         <form id="signup_form" class="space-y-5" method="POST">
             {{ signup_form.hidden_tag() }} <!-- CSRF protection token -->
             
+            <!--flasing messages for validation result-->
+            <div class="mb-4">
+            {% with flash_message = get_flashed_messages(with_categories=true)[-1] %}
+                {% if flash_message %}
+                    {% set category, message = flash_message %}
+                    {% if category == "signup_error" %}
+                        <p class="text-red-400 text-sm">{{ message }}</p>
+                    {% elif category == "signup_success" %}
+                        <p class="text-green-400 text-sm">{{ message}}</p>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+            </div>
+
+
             <div>
             <label class="block text-[var(--primary)] mb-2">Email</label>
                 {{ signup_form.email(
