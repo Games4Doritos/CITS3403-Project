@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block title %}Game Name - Profile{% endblock %}
+{% block extra_scripts %}
+<script>
+    const initialProfileMode = "{{ mode|default('view') }}";
+</script>
+<script src="{{ url_for('static', filename='profile.js') }}"></script>
+{% endblock %}
 
 {% block content %}
 <section class="w-full flex justify-center items-center pt-24 py-7 px-6">
@@ -99,15 +105,4 @@
     </div>
 </section>
 
-<script>
-    function showEditProfile() {
-        document.getElementById("profile-view").classList.add("hidden");
-        document.getElementById("edit-profile-view").classList.remove("hidden");
-    }
-
-    function showProfile() {
-        document.getElementById("edit-profile-view").classList.add("hidden");
-        document.getElementById("profile-view").classList.remove("hidden");
-    }
-</script>
 {% endblock %}
