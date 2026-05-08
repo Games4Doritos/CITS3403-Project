@@ -58,7 +58,8 @@ def leaderboard():
 
 @app.route('/profile')
 def profile():
-    return render_template('profile.html')
+    mode = request.args.get('mode', 'view')
+    return render_template('profile.html', mode=mode)
 
 @app.errorhandler(404)
 def page_not_found(e):
