@@ -1,6 +1,9 @@
 from flask import render_template, request, redirect, url_for, flash
-from app import app
+from flask_login import login_user, logout_user, login_required, current_user
+
+from app import app, db
 from app.forms import LoginForm, SignupForm
+from app.models import Account
 
 @app.route('/')
 def index():
@@ -15,13 +18,19 @@ def auth():
         form_type = request.form.get('form_type')
         
         if form_type == "signup":
-            if signup_form.validate():
-                print("Signup valid")
-                flash("Account created successfully. Please log in.")
-                # To do later: save new account
+            if signup_form.validate_on_submit():
+                account = Account(email=signup_form.email.data)
+                account.set_password(signup_form.password.data)
+
+                # Add new account to database
+                db.session.add(account)
+                db.session.commit()
+
+                flash("Account created successfully. Please log in.", "signup_success")
                 return redirect(url_for("auth"))
             else:
                 print(signup_form.errors)
+                flash("Signed up failed", "signup_error")
                 return render_template(
                     "auth.html",
                     login_form=login_form,
@@ -30,10 +39,26 @@ def auth():
                 )
 
         if form_type == "login":
-            if login_form.validate():
-                print("Login valid")
-                # To do later: log in player
-                return redirect(url_for("index"))
+            if login_form.validate_on_submit():
+                account = Account.query.filter_by(email=login_form.email.data).first()
+
+                # Password hashes matches
+                if account and account.check_password(login_form.password.data):
+                    # Create login session
+                    login_user(account)
+                    
+                    # For new signups that do not have profile
+                    if not account.profile: 
+                        return redirect(url_for("edit_profile"))
+                    # For existing user with profile
+                    return redirect(url_for("profile"))
+                
+                # Password hashes does not match or No such account
+                flash("Invalid email or password", "login_error")
+                return render_template(
+                    "auth.html",
+                    login_form=login_form,
+                    signup_form=signup_form,)
             else:
                 print(login_form.errors)
                 return render_template(
@@ -48,6 +73,12 @@ def auth():
         signup_form=signup_form
     )
 
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
 @app.route('/play')
 def play():
     return render_template('play.html')
@@ -57,10 +88,14 @@ def leaderboard():
     return render_template('leaderboard.html')
 
 @app.route('/profile')
+@login_required
 def profile():
+    # Ensuring if the profile is created by user, create one first
+    if not current_user.profile:
+        return redirect(url_for("edit_profile"))
     return render_template('profile.html')
 
-@app.route('/edit-profile')
+@app.route('/edit_profile')
 def edit_profile():
     return render_template('edit_profile.html')
 

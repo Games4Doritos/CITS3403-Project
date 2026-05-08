@@ -7,6 +7,9 @@ class Account(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
 
+    # one-to-one relationship with Profile
+    profile = db.relationship('Profile', backref='account', uselist=False)
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
     
@@ -20,3 +23,16 @@ class Account(UserMixin, db.Model):
 @login.user_loader
 def load_user(user_id):
     return Account.query.get(int(user_id))
+
+# Starting the Profile model minimal way for the use of authentication
+class Profile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(
+        db.Integer, 
+        db.ForeignKey('account.id'),
+        nullable=False
+    )
+    username = db.Column(
+        db.String(50),
+        nullable=False
+    )
