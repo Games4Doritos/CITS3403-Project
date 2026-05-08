@@ -21,6 +21,7 @@ def auth():
             if signup_form.validate_on_submit():
                 account = Account(email=signup_form.email.data)
                 account.set_password(signup_form.password.data)
+                account.generate_friend_code()
 
                 # Add new account to database
                 db.session.add(account)

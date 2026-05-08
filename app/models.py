@@ -2,11 +2,14 @@ from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
+import random
+import string
 
 class Account(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    friend_code = db.Column(db.String(8), nullable=False)
 
     # one-to-one relationship with Profile
     profile = db.relationship('Profile', backref='account', uselist=False)
@@ -16,6 +19,17 @@ class Account(UserMixin, db.Model):
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def generate_friend_code(self, length=8):
+        if not self.friend_code: 
+            possible_element = string.ascii_uppercase + string.digits
+            while True:
+                code = ''.join(random.choices(possible_element, k=length))
+                # To make sure uniqueness
+                existing_code = Account.query.filter_by(friend_code=code).first()
+                if not existing_code:
+                    self.friend_code = code
+                    break 
 
     # for clearer output when inspect
     def __repr__(self):
