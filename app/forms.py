@@ -3,7 +3,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, ValidationError
 from wtforms.validators import DataRequired, Email, Length, EqualTo
-from app.models import Player
+from app.models import Account
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired('Required'), Email()])# Error messages design later
@@ -21,6 +21,6 @@ class SignupForm(FlaskForm):
     )
 
     def validate_email(self, email):
-        if Player.query.filter_by(email=email.data).first():
+        if Account.query.filter_by(email=email.data).first():
             raise ValidationError('Email already exists')
         
