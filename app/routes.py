@@ -95,6 +95,10 @@ def leaderboard():
 @login_required
 def profile():
     mode = request.args.get('mode', 'view')
+
+    if not current_user.profile and mode != 'edit':
+        return redirect(url_for("profile", mode="edit"))
+
     return render_template('profile.html', mode=mode)
 
 @app.errorhandler(404)
