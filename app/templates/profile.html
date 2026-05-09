@@ -1,18 +1,14 @@
 {% extends "base.html" %}
 
 {% block title %}Game Name - Profile{% endblock %}
-{% block extra_scripts %}
-<script>
-    const initialProfileMode = "{{ mode|default('view') }}";
-</script>
-<script src="{{ url_for('static', filename='profile.js') }}"></script>
-{% endblock %}
+
 
 {% block content %}
 <section class="w-full flex justify-center items-center pt-24 py-7 px-6">
     <div class="w-full max-w-3xl">
 
         <!-- Profile View -->
+        {% if mode != 'edit' %}
         <div id="profile-view" class="rounded-3xl border border-[var(--primary)] bg-[rgba(255,255,255,0.02)] px-4 pt-4 pb-4 shadow-[0_0_1.2rem_var(--secondary)]">
             <h1 class="text-center text-5xl text-[var(--primary)] mb-2">My Profile</h1>
             <p class="text-center text-[var(--secondary)] mb-4">View your player details and game progress</p>
@@ -55,9 +51,9 @@
             
             <!-- Buttons -->
             <div class="flex flex-col md:flex-row justify-center gap-4 mb-2">
-                <button type="button" onclick="showEditProfile()" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
+               <a href="{{ url_for('profile', mode='edit') }}" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
                     Edit Profile
-                </button>
+               </a>
 
                 <a href="{{ url_for('leaderboard') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                     View Leaderboard
@@ -71,9 +67,11 @@
                 </a>
             </div>
         </div>
+        
 
         <!-- Edit Profile View -->
-        <div id="edit-profile-view" class="hidden rounded-3xl border border-[var(--primary)] bg-[rgba(255,255,255,0.02)] p-6 shadow-[0_0_1.2rem_var(--secondary)]">
+        {% else %}
+        <div id="edit-profile-view" class="rounded-3xl border border-[var(--primary)] bg-[rgba(255,255,255,0.02)] p-6 shadow-[0_0_1.2rem_var(--secondary)]">
             <h1 class="text-center text-5xl text-[var(--primary)] mb-2">Edit Profile</h1>
             <p class="text-center text-[var(--secondary)] mb-6">Update your player details</p>
 
@@ -98,12 +96,13 @@
                         Save Changes
                     </button>
 
-                    <button type="button" onclick="showProfile()" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                    <a href="{{ url_for('profile') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                         Back to Profile
-                    </button>
+                    </a>
                 </div>
             </form>
         </div>
+        {% endif %}
 
     </div>
 </section>
