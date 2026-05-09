@@ -31,7 +31,6 @@ class Account(UserMixin, db.Model):
                     self.friend_code = code
                     break 
 
-    # for clearer output when inspect
     def __repr__(self):
         return f"<Account {self.email}>"
     
@@ -39,7 +38,6 @@ class Account(UserMixin, db.Model):
 def load_user(user_id):
     return Account.query.get(int(user_id))
 
-# Starting the Profile model minimal way for the use of authentication
 class Profile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(
@@ -52,17 +50,20 @@ class Profile(db.Model):
         nullable=False
     )
 
-    # Relationship to game sessions
-    game_sessions = db.relationship('GameSession', backref='profile', lazy=True)
-
-class GameSession(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    profile_id = db.Column(db.Integer, db.ForeignKey('profile.id'), nullable=False)
-    score = db.Column(db.Integer, nullable=False)
-    duration = db.Column(db.Float, nullable=False)  # Duration in milliseconds
-    jump_count = db.Column(db.Integer, default=0)   # Total jumps in session
-    currency_earned = db.Column(db.Integer, default=0)  # Coins earned
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    # one-to-one relationship with BestStats
+    best_stats = db.relationship('BestStats', backref='profile', uselist=False)
 
     def __repr__(self):
-        return f"<GameSession {self.id}: Profile {self.player_id} - Score {self.score}>"
+        return f"<Profile {self.username}>"
+
+class BestStats(db.Model):
+    # id acts as primary key and foreign key to Profile
+    id = db.Column(db.Integer, db.ForeignKey('profile.id'), primary_key=True)
+    highscore = db.Column(db.Integer, default=0)
+    longest_time = db.Column(db.Float, default=0.0)  # in seconds, rounded to 2 d.p
+    jump_count = db.Column(db.Integer, default=0)     # total jump count across all runs
+    currency = db.Column(db.Integer, default=0)       # total currency across all runs
+    total_games = db.Column(db.Integer, default=0)    # total games played
+
+    def __repr__(self):
+        return f"<BestStats for Profile {self.id} - Highscore: {self.highscore}>"
