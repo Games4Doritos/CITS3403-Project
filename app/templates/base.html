@@ -18,7 +18,7 @@
             <!-- This auth button changed to profile button after log in-->
             {% if current_user.is_authenticated %}
                 <a href="{{url_for('profile')}}">
-                    {{current_user.profile.username}}
+                    {{current_user.profile.username if current_user.profile else "My Profile"}}
                 </a>
             {% else %}
                 <a href="{{ url_for('auth') }}">
