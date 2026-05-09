@@ -94,14 +94,12 @@ def leaderboard():
 @app.route('/profile')
 @login_required
 def profile():
-    # Ensuring if the profile is created by user, create one first
-    if not current_user.profile:
-        return redirect(url_for("edit_profile"))
-    return render_template('profile.html')
+    mode = request.args.get('mode', 'view')
 
-@app.route('/edit_profile')
-def edit_profile():
-    return render_template('edit_profile.html')
+    if not current_user.profile and mode != 'edit':
+        return redirect(url_for("profile", mode="edit"))
+
+    return render_template('profile.html', mode=mode)
 
 @app.errorhandler(404)
 def page_not_found(e):
