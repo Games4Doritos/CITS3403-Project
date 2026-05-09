@@ -13,6 +13,8 @@ class Account(UserMixin, db.Model):
 
     # one-to-one relationship with Profile
     profile = db.relationship('Profile', backref='account', uselist=False)
+    # one-to-one relationship with BestStats
+    best_stats = db.relationship('BestStats', backref='account', uselist=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -25,7 +27,6 @@ class Account(UserMixin, db.Model):
             possible_element = string.ascii_uppercase + string.digits
             while True:
                 code = ''.join(random.choices(possible_element, k=length))
-                # To make sure uniqueness
                 existing_code = Account.query.filter_by(friend_code=code).first()
                 if not existing_code:
                     self.friend_code = code
@@ -50,15 +51,12 @@ class Profile(db.Model):
         nullable=False
     )
 
-    # one-to-one relationship with BestStats
-    best_stats = db.relationship('BestStats', backref='profile', uselist=False)
-
     def __repr__(self):
         return f"<Profile {self.username}>"
 
 class BestStats(db.Model):
-    # id acts as primary key and foreign key to Profile
-    id = db.Column(db.Integer, db.ForeignKey('profile.id'), primary_key=True)
+    # id links to Account.id directly
+    id = db.Column(db.Integer, db.ForeignKey('account.id'), primary_key=True)
     highscore = db.Column(db.Integer, default=0)
     longest_time = db.Column(db.Float, default=0.0)  # in seconds, rounded to 2 d.p
     jump_count = db.Column(db.Integer, default=0)     # total jump count across all runs
@@ -66,4 +64,4 @@ class BestStats(db.Model):
     total_games = db.Column(db.Integer, default=0)    # total games played
 
     def __repr__(self):
-        return f"<BestStats for Profile {self.id} - Highscore: {self.highscore}>"
+        return f"<BestStats for Account {self.id} - Highscore: {self.highscore}>"
