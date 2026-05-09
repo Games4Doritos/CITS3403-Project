@@ -50,7 +50,7 @@ def auth():
                     
                     # For new signups that do not have profile
                     if not account.profile: 
-                        return redirect(url_for("edit_profile"))
+                        return redirect(url_for("profile", mode="edit"))
                     # For existing user with profile
                     return redirect(url_for("profile"))
                 
