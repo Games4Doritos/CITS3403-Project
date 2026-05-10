@@ -12,7 +12,8 @@ class Account(UserMixin, db.Model):
     friend_code = db.Column(db.String(8), nullable=False)
 
     # one-to-one relationship with Profile
-    profile = db.relationship('Profile', backref='account', uselist=False)
+    profile = db.relationship('Profile',backref='account',uselist=False,cascade='all, delete-orphan'
+)
     # one-to-one relationship with BestStats
     best_stats = db.relationship('BestStats', backref='account', uselist=False)
 
@@ -40,20 +41,17 @@ def load_user(user_id):
     return Account.query.get(int(user_id))
 
 class Profile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    account_id = db.Column(
-        db.Integer, 
-        db.ForeignKey('account.id'),
-        nullable=False
-    )
+    # id links directly to Account.id
+    id = db.Column(db.Integer, db.ForeignKey('account.id'), primary_key=True)
+
     username = db.Column(
         db.String(50),
         nullable=False
     )
 
     def __repr__(self):
-        return f"<Profile {self.username}>"
-
+        return f"<Profile for Account {self.account.email}>"
+    
 class BestStats(db.Model):
     # id links to Account.id directly
     id = db.Column(db.Integer, db.ForeignKey('account.id'), primary_key=True)
