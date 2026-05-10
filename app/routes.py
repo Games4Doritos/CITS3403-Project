@@ -174,20 +174,31 @@ def profile():
     # Save profile form
     if request.method == 'POST':
         username = request.form.get('username')
+        email = request.form.get('email')
+        # Basic validation to prevent empty fields
+        if not username or not email:
+            flash("Username and email are required.")
+            return redirect(url_for("profile", mode="edit"))
+        # Check if another account already uses this email
+        existing_account = Account.query.filter_by(email=email).first()
+        # Prevent duplicate emails between users
+        if existing_account and existing_account.id != current_user.id:
+            flash("Email already in use.")
+            return redirect(url_for("profile", mode="edit"))
+            
+        current_user.email = email
+        # New user without a profile yet
+        if not current_user.profile:
+            profile = Profile(id=current_user.id, username=username)
+            db.session.add(profile)
 
-        if username:
-            # New user without a profile yet
-            if not current_user.profile:
-                profile = Profile(id=current_user.id, username=username)
-                db.session.add(profile)
+        # Existing user updating username
+        else:
+            current_user.profile.username = username
 
-            # Existing user updating username
-            else:
-                current_user.profile.username = username
-
-            db.session.commit()
-            flash("Profile updated successfully.")
-            return redirect(url_for("profile"))
+        db.session.commit()
+        flash("Profile updated successfully.")
+        return redirect(url_for("profile"))
 
     # New logged-in users must create profile first
     if not current_user.profile and mode != 'edit':

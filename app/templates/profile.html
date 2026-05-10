@@ -32,7 +32,6 @@
 
             <!-- Stats -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-
                 <div class="rounded-2xl border border-[var(--primary)] px-4 py-2 text-center">
                     <h3 class="text-[var(--secondary)] text-lg mb-1">
                         High Score
@@ -62,7 +61,6 @@
                         {{ current_user.best_stats.total_games if current_user.best_stats else 0 }}
                     </p>
                 </div>
-
             </div>
 
             <!-- Extra Details -->
@@ -72,12 +70,10 @@
                 </h3>
 
                 <div class="space-y-2 text-white">
-
                     <p>
                         <span class="text-[var(--secondary)]">
                             Username:
                         </span>
-
                         {{ current_user.profile.username if current_user.profile else 'Player' }}
                     </p>
 
@@ -85,7 +81,6 @@
                         <span class="text-[var(--secondary)]">
                             Email:
                         </span>
-
                         {{ current_user.email }}
                     </p>
 
@@ -93,7 +88,6 @@
                         <span class="text-[var(--secondary)]">
                             Friend Code:
                         </span>
-
                         {{ current_user.friend_code if current_user.friend_code else 'N/A' }}
                     </p>
 
@@ -101,7 +95,6 @@
                         <span class="text-[var(--secondary)]">
                             Longest Run Time:
                         </span>
-
                         {{ current_user.best_stats.longest_time if current_user.best_stats else 0 }} seconds
                     </p>
 
@@ -109,45 +102,36 @@
                         <span class="text-[var(--secondary)]">
                             Jump Count:
                         </span>
-
                         {{ current_user.best_stats.jump_count if current_user.best_stats else 0 }}
                     </p>
-
                 </div>
             </div>
 
             <!-- Buttons -->
             <div class="flex flex-col md:flex-row justify-center gap-4 mb-2">
 
-                <a href="{{ url_for('profile', mode='edit') }}"
-                   class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
+                <a href="{{ url_for('profile', mode='edit') }}" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
                     Edit Profile
                 </a>
 
-                <a href="{{ url_for('leaderboard') }}"
-                   class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                <a href="{{ url_for('leaderboard') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                     View Leaderboard
                 </a>
 
-                <a href="{{ url_for('index') }}"
-                   class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                <a href="{{ url_for('index') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                     Back to Home
                 </a>
 
-                <a href="{{ url_for('logout') }}"
-                   class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                <a href="{{ url_for('logout') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                     Log Out
                 </a>
-
             </div>
         </div>
 
         {% else %}
 
         <!-- Edit Profile View -->
-        <div id="edit-profile-view"
-             class="rounded-3xl border border-[var(--primary)] bg-[rgba(255,255,255,0.02)] p-6 shadow-[0_0_1.2rem_var(--secondary)]">
-
+        <div id="edit-profile-view" class="rounded-3xl border border-[var(--primary)] bg-[rgba(255,255,255,0.02)] p-6 shadow-[0_0_1.2rem_var(--secondary)]">
             <h1 class="text-center text-5xl text-[var(--primary)] mb-2">
                 Edit Profile
             </h1>
@@ -157,12 +141,10 @@
             </p>
 
             <form class="space-y-4" method="POST">
-
                 <div>
                     <label class="block text-[var(--secondary)] mb-2">
                         Username
                     </label>
-
                     <input
                         type="text"
                         name="username"
@@ -175,29 +157,23 @@
                     <label class="block text-[var(--secondary)] mb-2">
                         Email
                     </label>
-
                     <input
                         type="email"
+                        name="email"
                         value="{{ current_user.email }}"
-                        disabled
-                        class="w-full rounded-xl bg-transparent border border-[var(--primary)] px-4 py-3 text-gray-400 cursor-not-allowed focus:outline-none"
+                        class="w-full rounded-xl bg-transparent border border-[var(--primary)] px-4 py-3 text-white focus:outline-none focus:border-[var(--secondary)]"
                     >
                 </div>
 
                 <div class="flex flex-col md:flex-row justify-center gap-4 pt-4">
-
-                    <button type="submit"
-                            class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
+                    <button type="submit" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
                         Save Changes
                     </button>
 
-                    <a href="{{ url_for('profile') }}"
-                       class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                    <a href="{{ url_for('profile') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                         Back to Profile
                     </a>
-
                 </div>
-
             </form>
         </div>
 
