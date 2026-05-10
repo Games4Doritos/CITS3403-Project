@@ -23,20 +23,12 @@ class player{
         //Dimensions of sprite: 60x40
         this.jumpMemory = -1;
         this.lastTime = performance.now();
-        this.jumpCount = BigInt(0);
+        this.jumpCount = 0;
     }
     draw(context){
         context.drawImage(this.sprite,this.x,this.y,40,60);
     }
     update(context){
-        const now = performance.now();
-        /*Calculation justification:
-        Raw now-lastTime is in milliseconds hence * 0.001
-        To converge towards 60fps since fps isn't always consistent, * 60 as 
-        ideally the field will be updated 60 times per second
-        */
-        const deltaTime = (now - this.lastTime) * 0.06;
-        this.lastTime = now;
 
         if (this.jumpMemory >-1){
             //velocity will start at -13, decelerate to 0, then accelerate to 13 (standard parabolic jump)
@@ -173,7 +165,8 @@ function frame(){
     // add baseMultiplier and bonusMultiplier together (done safely and rounded to avoid precision errors)
     let multiplier = Number(Math.round(baseMultiplier + bonusMultiplier + 'e' + 1) + 'e-' + 1);
     multiplierElement.textContent = `${multiplier}`;
-    score += deltaTime * 0.1 * multiplier;
+    // score is 1/10 * frame time at each frame, multiplied by the multiplier
+    score += (deltaTime * 0.1) * multiplier;
     scoreElement.textContent = `${Math.round(score)}`;
     lastTime = now;
 
@@ -217,6 +210,21 @@ function frame(){
 
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+const uploadResults = async (finalTime, totalJumps, totalScore, newCurrency) => {
+    const response = await fetch("/play", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            finalTime: finalTime, 
+            totalJumps: totalJumps,
+            totalScore: totalScore, 
+            newCurrency: newCurrency,
+        }),
+    });
+    await console.log(response.text(), response.status);
+
+}
+
 async function runEnd(){
     running = false;
     if (dead){
@@ -224,11 +232,13 @@ async function runEnd(){
     }
     //rounds it to two decimal places in milliseconds
     finalRunDuration = Number(Math.round(performance.now() - runStart - pausedTime + 'e' + 2) + 'e-' + 2);
-    cancelAnimationFrame(animationID);
+    //rounds to two decimal places in seconds
+    cancelAnimationFrame(animationID); 
     dead = true;
     //get final stats
-
-    const currency = Math.floor(Math.round(score) * 0.01);
+    const finalRunSeconds = Number(Math.round(finalRunDuration * 0.001 + 'e' + 2) + 'e-' + 2);
+    const roundedScore = Math.round(score);
+    const currency = Math.floor(roundedScore * 0.01);
     // currency will be 1/100 of the total score, rounded down
 
     const finalTime = document.getElementById("finalTime");
@@ -236,9 +246,9 @@ async function runEnd(){
     const totalScore = document.getElementById("totalScore");
     const newCurrency = document.getElementById("newCurrency");
     //set final stats in appropriate elements
-    finalTime.textContent = `Final Time: ${(finalRunDuration*0.001).toFixed(2)} Seconds`;
+    finalTime.textContent = `Final Time: ${finalRunSeconds} Seconds`;
     totalJumps.textContent = `Total Jumps: ${curPlayer.jumpCount}`;
-    totalScore.textContent = `Total Score: ${Math.round(score)}`;
+    totalScore.textContent = `Total Score: ${roundedScore}`;
     newCurrency.firstElementChild.textContent = `${currency}`;
     
     //small animation
@@ -252,6 +262,8 @@ async function runEnd(){
     totalScore.style.display = "block";
     await wait(500);
     newCurrency.style.display = "block";
+
+    uploadResults(finalRunSeconds, curPlayer.jumpCount, roundedScore, currency);
 }
 function pauseButton(){
     if (dead){
