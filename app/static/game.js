@@ -211,17 +211,44 @@ function frame(){
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const uploadResults = async (finalTime, totalJumps, totalScore, newCurrency) => {
-    const response = await fetch("/play", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            finalTime: finalTime, 
-            totalJumps: totalJumps,
-            totalScore: totalScore, 
-            newCurrency: newCurrency,
-        }),
-    });
-    await console.log(response.text(), response.status);
+    try{
+        const response = await fetch("/play", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                finalTime: finalTime, 
+                totalJumps: totalJumps,
+                totalScore: totalScore, 
+                newCurrency: newCurrency,
+            }),
+        });
+        const data = await response.text();
+        const failMessage = document.getElementById("failMessage");
+        const successMessage = document.getElementById("successMessage");
+        if (!end.style.display){
+            return;
+        }
+        if (!response.ok){
+            if (response.status === 400){
+                failMessage.textContent = `Run Failed to Submit, are you sure it was valid?`;
+            }
+            else{
+                failMessage.textContent = `Run Failed to Submit, Error Code: ${response.status}`;
+            }
+            successMessage.style.display = "none";
+            failMessage.style.display="block";
+        }
+        else{
+            failMessage.style.display="none";
+            successMessage.style.display = "block";
+
+        }
+        
+    }
+    catch (error) {
+        console.error('Error:', error);
+    }
+    
 
 }
 
