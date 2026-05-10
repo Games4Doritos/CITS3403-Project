@@ -26,42 +26,55 @@
                 <div class="w-24 text-right text-[var(--primary)] font-bold">Score</div>
             </div>
 
-            {% for game in top_scores %}
-            <div class="flex items-center p-3 rounded-2xl border 
-                {% if loop.index == 1 %}border-yellow-500/50 bg-yellow-500/5 backdrop-brightness-125 shadow-[0_0_1rem_rgba(234,179,8,0.2)]
-                {% elif loop.index == 2 %}border-slate-400/50 bg-slate-400/5 backdrop-brightness-110
-                {% elif loop.index == 3 %}border-amber-700/50 bg-amber-700/5 backdrop-brightness-110
-                {% else %}border-[var(--primary)] bg-transparent backdrop-brightness-110{% endif %}">
-                
-                <div class="w-16 
-                    {% if loop.index == 1 %}text-yellow-400 text-xl
-                    {% elif loop.index == 2 %}text-slate-300 text-lg
-                    {% elif loop.index == 3 %}text-amber-600 text-lg
-                    {% else %}text-[var(--secondary)]{% endif %}">
-                    {% if loop.index == 1 %}<i class="fa fa-trophy"></i> {% endif %}{{ loop.index }}
+            {% if top_scores %}
+                {% for stats in top_scores %}
+                <div class="flex items-center p-3 rounded-2xl border 
+                    {% if loop.index == 1 %}border-yellow-500/50 bg-yellow-500/5 backdrop-brightness-125 shadow-[0_0_1rem_rgba(234,179,8,0.2)]
+                    {% elif loop.index == 2 %}border-slate-400/50 bg-slate-400/5 backdrop-brightness-110
+                    {% elif loop.index == 3 %}border-amber-700/50 bg-amber-700/5 backdrop-brightness-110
+                    {% else %}border-[var(--primary)] bg-transparent backdrop-brightness-110{% endif %}">
+                    
+                    <div class="w-16 
+                        {% if loop.index == 1 %}text-yellow-400 text-xl
+                        {% elif loop.index == 2 %}text-slate-300 text-lg
+                        {% elif loop.index == 3 %}text-amber-600 text-lg
+                        {% else %}text-[var(--secondary)]{% endif %}">
+                        {% if loop.index == 1 %}<i class="fa fa-trophy"></i> {% endif %}{{ loop.index }}
+                    </div>
+                    
+                    <div class="flex-1 
+                        {% if loop.index <= 2 %}text-white font-bold
+                        {% elif loop.index == 3 %}text-white font-semibold
+                        {% else %}text-white/80{% endif %}">
+                        {{ stats.account.profile.username if stats.account.profile else stats.account.email.split('@')[0] }}
+                    </div>
+                    
+                    <div class="w-24 text-right 
+                        {% if loop.index == 1 %}text-yellow-400 font-bold
+                        {% elif loop.index == 2 %}text-slate-300 font-semibold
+                        {% elif loop.index == 3 %}text-amber-600 font-semibold
+                        {% else %}text-white/80{% endif %}">
+                        {{ stats.highscore }}
+                    </div>
                 </div>
-                
-                <div class="flex-1 
-                    {% if loop.index <= 2 %}text-white font-bold
-                    {% elif loop.index == 3 %}text-white font-semibold
-                    {% else %}text-white/80{% endif %}">
-                    {{ game.player.email.split('@')[0] }}
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-12">
+                    <i class="fa fa-trophy text-6xl text-[var(--primary)] mb-4 opacity-30"></i>
+                    <p class="text-[var(--secondary)] text-xl mb-2">No scores yet!</p>
+                    <p class="text-[var(--secondary)] opacity-60">Be the first to set a high score.</p>
+                    <a href="{{ url_for('play') }}">
+                        <div class="inline-block mt-6 px-8 py-3 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg font-bold shadow-[0_0_1rem_var(--secondary)] transition cursor-pointer">
+                            Play Now!
+                        </div>
+                    </a>
                 </div>
-                
-                <div class="w-24 text-right 
-                    {% if loop.index == 1 %}text-yellow-400 font-bold
-                    {% elif loop.index == 2 %}text-slate-300 font-semibold
-                    {% elif loop.index == 3 %}text-amber-600 font-semibold
-                    {% else %}text-white/80{% endif %}">
-                    {{ game.score }}
-                </div>
-            </div>
-            {% endfor %}
+            {% endif %}
         </div>
 
         <div class="flex justify-center mt-8">
             <a href="{{ url_for('index') }}">
-                <div class="px-8 py-3 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-black font-bold shadow-[0_0_1rem_var(--secondary)] transition cursor-pointer">
+                <div class="px-8 py-3 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg font-bold shadow-[0_0_1rem_var(--secondary)] transition cursor-pointer">
                     Back to Home
                 </div>
             </a>
