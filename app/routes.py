@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 
 from app import app, db
 from app.forms import LoginForm, SignupForm
-from app.models import Account
+from app.models import Account, Profile
 
 @app.route('/')
 def index():
@@ -91,13 +91,31 @@ def leaderboard():
     top_scores = BestStats.query.order_by(BestStats.highscore.desc()).limit(10).all()
     return render_template('leaderboard.html', top_scores=top_scores)
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-
     mode = request.args.get('mode', 'view')
 
-    if current_user.is_authenticated and not current_user.profile and mode != 'edit':
+    # Save profile form
+    if request.method == 'POST':
+        username = request.form.get('username')
+
+        if username:
+            # New user without a profile yet
+            if not current_user.profile:
+                profile = Profile(id=current_user.id, username=username)
+                db.session.add(profile)
+
+            # Existing user updating username
+            else:
+                current_user.profile.username = username
+
+            db.session.commit()
+            flash("Profile updated successfully.")
+            return redirect(url_for("profile"))
+
+    # New logged-in users must create profile first
+    if not current_user.profile and mode != 'edit':
         return redirect(url_for("profile", mode="edit"))
 
     return render_template('profile.html', mode=mode)
