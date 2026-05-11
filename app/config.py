@@ -8,12 +8,23 @@ default_db_path = 'sqlite:///' + os.path.join(basedir, 'game.db') # could move t
 class Config:
     SECRET_KEY = os.environ.get("GAME_SECRET_KEY")
 
-    # Use database URL from environment if needed later
-    # otherwise use local SQLite database for now
-    SQLALCHEMY_DATABASE_URI = os.environ.get('GAME_DATABASE_URL') or default_db_path
-
     # disable unnecessary tracking to improve performance
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
 
     # enable CSRF protection for forms
     WTF_CSRF_ENABLED = True
+
+
+class DeploymentConfig(Config):
+    # Use database URL from environment if needed later
+    # otherwise use local SQLite database
+    SQLALCHEMY_DATABASE_URI = os.environ.get('GAME_DATABASE_URL') or default_db_path
+
+    # DEBUG = False 
+
+class TestConfig(Config):
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///memory'
+    TESTING = True
+
+    # Disable CSRF protection during automated tests
+    WTF_CSRF_ENABLED = False
