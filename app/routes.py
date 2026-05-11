@@ -4,7 +4,7 @@ from json import loads
 
 from app import app, db
 from app.forms import LoginForm, SignupForm
-from app.models import Account, BestStats
+from app.models import Account, Profile, BestStats
 
 @app.route('/')
 def index():
@@ -166,13 +166,42 @@ def leaderboard():
     top_scores = BestStats.query.order_by(BestStats.highscore.desc()).limit(10).all()
     return render_template('leaderboard.html', top_scores=top_scores)
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-
     mode = request.args.get('mode', 'view')
 
-    if current_user.is_authenticated and not current_user.profile and mode != 'edit':
+    # Save profile form
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        # Basic validation to prevent empty fields
+        if not username or not email:
+            flash("Username and email are required.")
+            return redirect(url_for("profile", mode="edit"))
+        # Check if another account already uses this email
+        existing_account = Account.query.filter_by(email=email).first()
+        # Prevent duplicate emails between users
+        if existing_account and existing_account.id != current_user.id:
+            flash("Email already in use.")
+            return redirect(url_for("profile", mode="edit"))
+            
+        current_user.email = email
+        # New user without a profile yet
+        if not current_user.profile:
+            profile = Profile(id=current_user.id, username=username)
+            db.session.add(profile)
+
+        # Existing user updating username
+        else:
+            current_user.profile.username = username
+
+        db.session.commit()
+        flash("Profile updated successfully.")
+        return redirect(url_for("profile"))
+
+    # New logged-in users must create profile first
+    if not current_user.profile and mode != 'edit':
         return redirect(url_for("profile", mode="edit"))
 
     return render_template('profile.html', mode=mode)
