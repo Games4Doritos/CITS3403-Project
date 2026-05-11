@@ -19,7 +19,15 @@ def create_app(config):
     db.init_app(app)
     login.init_app(app)
 
-    from app import routes
+    # register blueprint
+    from app.routes import main, auth, user, game, leaderboard
+
+    app.register_blueprint(main)
+    app.register_blueprint(auth)
+    app.register_blueprint(user)
+    app.register_blueprint(game)
+    app.register_blueprint(leaderboard)
+
     from app import models
 
     return app
