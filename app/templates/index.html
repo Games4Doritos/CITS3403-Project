@@ -33,34 +33,31 @@
             <p class="p-2 bg-[var(--secondary)] w-fit rounded-lg relative mb-1">
                 <i class="fa fa-bolt" aria-hidden="true"></i>
             </p>
-            <p class="mb-1">
-                <b>
-                    Endless Challenge
-                </b>
-            </p>
+            <p class="mb-1"><b>Endless Challenge</b></p>
             See how far you can go with increasingly difficult conditions
         </div>
         <div class="p-7 rounded-2xl w-64 m-5 shadow-[0_0_1rem_var(--secondary)] backdrop-brightness-110">
             <p class="p-2 bg-[var(--secondary)] w-fit rounded-lg relative mb-1">
                 <i class="fa fa-trophy" aria-hidden="true"></i>
             </p>
-            <p class="mb-1">
-                <b>
-                    Global Rankings
-                </b>
-            </p>
+            <p class="mb-1"><b>Global Rankings</b></p>
             Compete with players worldwide to see where you place
         </div>
         <div class="p-7 rounded-2xl w-64 m-5 shadow-[0_0_1rem_var(--secondary)] backdrop-brightness-110">
             <p class="p-2 bg-[var(--secondary)] w-fit rounded-lg relative mb-1">
                 <i class="fa fa-user" aria-hidden="true"></i>
             </p>
-            <p class="mb-1">
-                <b>
-                    Rich Customisation
-                </b>
-            </p>
+            <p class="mb-1"><b>Rich Customisation</b></p>
             Unlock cosmetics with currency or by getting achievements
+        </div>
+    </div>
+
+    <!-- Mini Demo Section -->
+    <div class="text-center w-full mb-32">
+        <h2 class="text-5xl text-[var(--primary)] mb-4" style="text-shadow: 0 0 3rem var(--secondary), 0 0 2rem var(--primary);">Try it Out</h2>
+        <p class="text-[var(--secondary)] mb-8" style="text-shadow: 0 0 1rem var(--secondary);">Get a feel for the controls before you jump in</p>
+        <div class="relative mx-auto max-w-3xl rounded-3xl border border-[var(--primary)] shadow-[0_0_1.2rem_var(--secondary)] overflow-hidden">
+            <canvas id="tutorialCanvas" style="width: 100%; height: 300px; display: block;"></canvas>
         </div>
     </div>
     
@@ -74,4 +71,8 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='tutorial.js') }}"></script>
 {% endblock %}
