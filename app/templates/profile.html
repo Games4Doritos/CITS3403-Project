@@ -110,19 +110,19 @@
             <!-- Buttons -->
             <div class="flex flex-col md:flex-row justify-center gap-4 mb-2">
 
-                <a href="{{ url_for('profile', mode='edit') }}" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
+                <a href="{{ url_for('user.profile', mode='edit') }}" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
                     Edit Profile
                 </a>
 
-                <a href="{{ url_for('leaderboard') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                <a href="{{ url_for('leaderboard.global_rank') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                     View Leaderboard
                 </a>
 
-                <a href="{{ url_for('index') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                <a href="{{ url_for('main.index') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                     Back to Home
                 </a>
 
-                <a href="{{ url_for('logout') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                <a href="{{ url_for('auth.logout') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                     Log Out
                 </a>
             </div>
@@ -170,7 +170,7 @@
                         Save Changes
                     </button>
 
-                    <a href="{{ url_for('profile') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                    <a href="{{ url_for('user.profile') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                         Back to Profile
                     </a>
                 </div>
