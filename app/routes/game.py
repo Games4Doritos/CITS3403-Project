@@ -67,7 +67,8 @@ def play():
                 db.session.commit()
             else:
                 curBestStats = current_user.best_stats
-                
+                # Increase games played count for every submitted run
+                current_user.best_stats.total_games += 1
                 #one final validation for types
                 if curBestStats.highscore < requestData["totalScore"]:
                     current_user.best_stats.highscore = round(requestData["totalScore"])
