@@ -5,6 +5,17 @@
 {% block content %}
 <section class="w-full flex justify-center items-center pt-20 py-4 px-6">
     <div class="w-full max-w-3xl">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="mb-4 space-y-2">
+                    {% for message in messages %}
+                        <div class="rounded-xl border border-[var(--primary)] bg-[rgba(255,255,255,0.05)] px-4 py-3 text-center text-[var(--secondary)]">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
         {% if mode != 'edit' %}
 
