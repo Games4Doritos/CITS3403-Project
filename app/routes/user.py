@@ -16,40 +16,40 @@ def profile():
     # Create edit profile form
     form = EditProfileForm()
 
-    # Save profile form after validation
-    if form.validate_on_submit():
-
-        # Remove extra spaces from inputs
-        username = form.username.data.strip()
-        email = form.email.data.strip().lower()
-
-        # Update account email
-        current_user.email = email
-
-        # New user without a profile yet
-        if not current_user.profile:
-            profile = Profile(
-                id=current_user.id,
-                username=username
-            )
-            db.session.add(profile)
-
-        # Existing user updating username
-        else:
-            current_user.profile.username = username
-
-        db.session.commit()
-
-        flash("Profile updated successfully.")
-        return redirect(url_for("user.profile"))
-
-    # Display validation errors
+    # Handle profile form submission
     if request.method == 'POST':
-        for field, errors in form.errors.items():
-            for error in errors:
-                flash(error)
 
-        return redirect(url_for("user.profile", mode="edit"))
+        # Save profile form after validation
+        if form.validate_on_submit():
+
+            # Remove extra spaces from inputs
+            username = form.username.data.strip()
+            email = form.email.data.strip().lower()
+
+            # Update account email
+            current_user.email = email
+
+            # New user without a profile yet
+            if not current_user.profile:
+                profile = Profile(id=current_user.id,username=username)
+                db.session.add(profile)
+
+            # Existing user updating username
+            else:
+                current_user.profile.username = username
+
+            db.session.commit()
+
+            flash("Profile updated successfully.")
+            return redirect(url_for("user.profile"))
+
+        # Display validation errors
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(error)
+
+            return redirect(url_for("user.profile", mode="edit"))
 
     # New logged-in users must create profile first
     if not current_user.profile and mode != 'edit':
