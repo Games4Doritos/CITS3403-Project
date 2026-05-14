@@ -6,8 +6,8 @@ from flask_login import LoginManager
 db = SQLAlchemy()
 login = LoginManager()
 
-# Redirect unauthenticated unsers to auth page
-login.login_view = 'auth'
+# Redirect unauthenticated users to auth page
+login.login_view = 'auth.login_signup'
 
 
 def create_app(config):
