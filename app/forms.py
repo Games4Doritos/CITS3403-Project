@@ -59,3 +59,15 @@ class EditProfileForm(FlaskForm):
 
         if existing_account and existing_account.id != current_user.id:
             raise ValidationError('Email already in use')
+        
+class FriendCodeForm(FlaskForm):
+    friendCode = StringField('Friend Code', validators=[DataRequired('Required'), Length(max=8, min=8, message='Please enter an 8-digit friend code')])
+    
+    def validate_friend_code(self, code):
+        account = Account.query.filter_by(friend_code=code).first()
+        print(account)
+        if not account:
+            return False
+        if account and account.id == current_user.id:
+            return False
+        return True

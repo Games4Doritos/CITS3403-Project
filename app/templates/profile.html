@@ -97,13 +97,6 @@
 
                     <p>
                         <span class="text-[var(--secondary)]">
-                            Friend Code:
-                        </span>
-                        {{ current_user.friend_code if current_user.friend_code else 'N/A' }}
-                    </p>
-
-                    <p>
-                        <span class="text-[var(--secondary)]">
                             Longest Run Time:
                         </span>
                         {{ current_user.best_stats.longest_time if current_user.best_stats else 0 }} seconds
@@ -116,6 +109,45 @@
                         {{ current_user.best_stats.jump_count if current_user.best_stats else 0 }}
                     </p>
                 </div>
+            </div>
+
+            <!-- Friends Section-->
+            <div class="border border-[var(--primary)] rounded-2xl p-4 mb-5">
+                <h3 class="text-[var(--primary)] text-xl mb-4">
+                    Friends
+                </h3>
+                <p class="text-[var(--secondary)] w-fit border-b border-[var(--primary)] pb-2 mb-2">
+                    You can give a friendship boost to one friend every 24 hours!
+                </p>
+                <div class="flex">
+                    {% for friend in friendAccounts %}
+                        <div class="rounded-[50%] border border-[var(--primary)] w-fit p-2">
+                            {{friend.profile.username}}
+                        </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+                <p class="text-[var(--secondary)]">
+                    Get a player's friend code to send them a request!
+                </p>
+                <form method="POST">
+                    {{ friendCodeForm.hidden_tag() }}
+                    <div>
+                        {{ friendCodeForm.friendCode(
+                            class="p-2 rounded-xl w-fit my-2 border-2 bg-[var(--secondary)] border-[var(--primary)]",
+                            type="text",
+                            required=True
+                        )}}
+                    </div>
+                </form>
+                <p class="text-[var(--secondary)] text-lg">
+                    Your friend code: <span class="text-white">{{ current_user.friend_code }}</span>
+                </p>
+
+
             </div>
 
             <!-- Buttons -->
@@ -152,7 +184,7 @@
             </p>
 
             <form class="space-y-4" method="POST">
-                {{ form.hidden_tag() }}
+                {{ editForm.hidden_tag() }}
                 <div>
                     <label class="block text-[var(--secondary)] mb-2">
                         Username

@@ -5,6 +5,7 @@ from datetime import datetime
 import random
 import string
 
+
 class Account(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(30), unique=True, nullable=False)
@@ -12,10 +13,10 @@ class Account(UserMixin, db.Model):
     friend_code = db.Column(db.String(8), nullable=False)
 
     # one-to-one relationship with Profile
-    profile = db.relationship('Profile',backref='account',uselist=False,cascade='all, delete-orphan'
-)
+    profile = db.relationship('Profile',backref='account',uselist=False,cascade='all, delete-orphan')
     # one-to-one relationship with BestStats
     best_stats = db.relationship('BestStats', backref='account', uselist=False)
+    
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -55,6 +56,7 @@ class Profile(db.Model):
 class BestStats(db.Model):
     # id links to Account.id directly
     id = db.Column(db.Integer, db.ForeignKey('account.id'), primary_key=True)
+    
     highscore = db.Column(db.Integer, default=0)
     longest_time = db.Column(db.Float, default=0.0)  # in seconds, rounded to 2 d.p
     jump_count = db.Column(db.Integer, default=0)     # total jump count across all runs
@@ -63,3 +65,10 @@ class BestStats(db.Model):
 
     def __repr__(self):
         return f"<BestStats for Account {self.id} - Highscore: {self.highscore}>"
+    
+class Friendship(db.Model):
+    # account id's of the two users in the friendship
+    friendID1 = db.Column(db.Integer, db.ForeignKey("account.id"), primary_key=True)
+    friendID2 = db.Column(db.Integer, db.ForeignKey("account.id"), primary_key=True)
+    pending = db.Column(db.Boolean, default=True, nullable=False) # pending status
+    
