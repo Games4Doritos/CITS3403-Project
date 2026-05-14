@@ -51,8 +51,8 @@ class SignupForm(FlaskForm):
     )
 
 class EditProfileForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(message='Username is required'),Length(min=2, max=30, message='Username must be between 2 and 30 characters')])
-    email = StringField('Email', validators=[DataRequired(message='Email is required'), Email(message='Invalid email format')])
+    username = StringField('Username', validators=[DataRequired(message='Username is required'),Length(min=2, max=18, message='Username must be between 2 and 18 characters')])
+    email = StringField('Email', validators=[DataRequired(message='Email is required'), Email(message='Invalid email format'),  Length(max=30, message='Max length (30) exceeded')])
 
     def validate_email(self, email):
         existing_account = Account.query.filter_by(email=email.data.strip().lower()).first()

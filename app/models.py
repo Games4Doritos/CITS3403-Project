@@ -45,7 +45,7 @@ class Profile(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('account.id'), primary_key=True)
 
     username = db.Column(
-        db.String(50),
+        db.String(18),
         nullable=False
     )
 
