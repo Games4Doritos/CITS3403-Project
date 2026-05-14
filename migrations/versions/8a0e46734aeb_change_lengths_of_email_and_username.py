@@ -29,7 +29,7 @@ def upgrade():
                existing_type=sa.VARCHAR(length=50),
                type_=sa.String(length=18),
                existing_nullable=False)
-        batch_op.create_foreign_key(None, 'account', ['id'], ['id'])
+        batch_op.create_foreign_key('profileAccountId', 'account', ['id'], ['id'])
 
     # ### end Alembic commands ###
 
