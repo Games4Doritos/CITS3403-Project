@@ -8,24 +8,51 @@ from app.models import Account
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired('Required'), Email()])
-    password = PasswordField('Password', validators=[DataRequired('Required')])
+    email = StringField(
+        'Email', 
+        validators=[
+            DataRequired(message='Required'), 
+            Email(message='Invalid email format'),
+            Length(max=30)
+        ]
+    )
+    password = PasswordField(
+        'Password', 
+        validators=[
+            DataRequired(message='Required'),
+            Length(max=64)
+        ]
+    )
 
 
 class SignupForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired('Required'), Email(message='Invalid email format')])
-    password = PasswordField('Password', validators=[DataRequired('Required'), Length(min=6, message='At least 6 characters')])
+    email = StringField(
+        'Email', 
+        validators=[
+            DataRequired(message='Required'), 
+            Email(message='Invalid email format'), 
+            Length(max=30, message='Max length (30) exceeded')
+        ]
+    )
+    password = PasswordField(
+        'Password', 
+        validators=[
+            DataRequired('Required'), 
+            Length(min=6, max=64, message='Password must be between 6 and 64 characters') 
+        ]
+    )
     confirm_password = PasswordField(
         'Confirm Password',
         validators=[
-            DataRequired('Required'),
-            EqualTo('password', message='Confirmation password does not match')
+            DataRequired(message='Required'),
+            EqualTo('password', message='Confirmation password does not match'),
+            Length(max=64)
         ]
     )
 
 class EditProfileForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired('Username is required'),Length(min=2, max=30, message='Username must be between 2 and 30 characters')])
-    email = StringField('Email', validators=[DataRequired('Email is required'), Email(message='Invalid email format')])
+    username = StringField('Username', validators=[DataRequired(message='Username is required'),Length(min=2, max=30, message='Username must be between 2 and 30 characters')])
+    email = StringField('Email', validators=[DataRequired(message='Email is required'), Email(message='Invalid email format')])
 
     def validate_email(self, email):
         existing_account = Account.query.filter_by(email=email.data.strip().lower()).first()
