@@ -7,7 +7,7 @@ import string
 
 class Account(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(30), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     friend_code = db.Column(db.String(8), nullable=False)
 
@@ -45,7 +45,7 @@ class Profile(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('account.id'), primary_key=True)
 
     username = db.Column(
-        db.String(50),
+        db.String(18),
         nullable=False
     )
 

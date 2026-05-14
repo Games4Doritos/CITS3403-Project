@@ -18,6 +18,19 @@ def login_signup():
         
         if form_type == "signup":
             if signup_form.validate_on_submit():
+                # Check whether account already exists
+                existing_account = Account.query.filter_by(
+                    email=signup_form.email.data
+                ).first()
+
+                if existing_account:
+                    flash("This email is already registered", "signup_error")
+                    return render_template(
+                        "auth.html",
+                        login_form=login_form,
+                        signup_form=signup_form,
+                        mode="signup"
+                    )
                 account = Account(email=signup_form.email.data)
                 account.set_password(signup_form.password.data)
                 account.generate_friend_code()
@@ -60,7 +73,6 @@ def login_signup():
                     login_form=login_form,
                     signup_form=signup_form,)
             else:
-                print(login_form.errors)
                 return render_template(
                     "auth.html",
                     login_form=login_form,
