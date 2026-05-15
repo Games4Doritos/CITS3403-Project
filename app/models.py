@@ -4,6 +4,7 @@ from flask_login import UserMixin
 import random
 import string
 
+
 class Account(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(30), unique=True, nullable=False)

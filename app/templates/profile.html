@@ -2,6 +2,15 @@
 
 {% block title %}Game Name - Profile{% endblock %}
 
+
+{% block extra_scripts %}
+    <script> 
+        const friends = {{ friendAccounts | tojson }};
+    </script>
+    <script defer src="{{ url_for('static', filename='friends.js')}}"></script>
+{% endblock %}
+    
+
 {% block content %}
 <section class="w-full flex justify-center items-center pt-20 py-4 px-6">
     <div class="w-full max-w-3xl">
@@ -97,13 +106,6 @@
 
                     <p>
                         <span class="text-[var(--secondary)]">
-                            Friend Code:
-                        </span>
-                        {{ current_user.friend_code if current_user.friend_code else 'N/A' }}
-                    </p>
-
-                    <p>
-                        <span class="text-[var(--secondary)]">
                             Longest Run Time:
                         </span>
                         {{ current_user.best_stats.longest_time if current_user.best_stats else 0 }} seconds
@@ -116,6 +118,101 @@
                         {{ current_user.best_stats.jump_count if current_user.best_stats else 0 }}
                     </p>
                 </div>
+            </div>
+
+            <!-- Friends Section-->
+            <div class="border border-[var(--primary)] rounded-2xl p-4 mb-5">
+                <h3 class="text-[var(--primary)] text-xl mb-4">
+                    Friends
+                </h3>
+                <p class="text-[var(--secondary)] w-fit border-b border-[var(--primary)] pb-2 mb-4">
+                    You can give a friendship boost to one friend every 24 hours!
+                </p>
+                <div class="hidden rounded-2xl border-[var(--primary)] shadow-[0_0_1rem_var(--primary)] border w-fit p-5" id="friendInfo">
+                    <div class="border-b border-[var(--primary)] p-2 my-2 mr-5 text-[var(--secondary)] text-center text-xl w-full">
+                        Username
+                    </div>
+                    <form method="POST" id="friendActionForm" class="gap-2 flex-wrap flex">
+                        {{ friendCodeForm.hidden_tag()}}
+                        <input type="hidden" name="friendEmail" value="">
+                        <button 
+                            type="submit"
+                            name="action"
+                            value="gift/accept"
+                        >
+                            <div class="rounded-2xl bg-[var(--primary)] p-2 my-2 w-fit shadow-[0_0_1rem_var(--secondary)] hover:scale-105">
+                                Gift Bonus
+                            </div>
+                        </button>
+                        <button 
+                            type="submit"
+                            name="action"
+                            value="remove/reject"
+                        >
+                            <div class="rounded-2xl bg-[var(--background)] p-2 my-2 w-fit border-[var(--primary)] border text-[var(--primary)] hover:scale-105">
+                                Remove Friend
+                            </div>
+                        </button>
+                    </form>
+                    
+                </div>
+                <div class="flex py-5 flex-wrap gap-2">
+                    {% if friendAccounts%}
+                        {% for friend in friendAccounts %}
+                            <button onclick="selectFriend('{{friend['email']}}')" class="hover:scale-105">
+                                <div 
+                                    class="relative rounded-[50%] border w-16 h-16 text-xl flex items-center justify-center 
+                                        text-[var(--primary)] border-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)]"
+                                >
+                                    {% if friend['username'] %}
+                                        {{friend['username'][:2]}}
+                                    {% else %}
+                                        {{friend['email'][:2]}}
+                                    {% endif %}
+                                </div>
+                                {% if friend['pending'] %}
+                                    <div class="relative left-[60%] bottom-[120%]">
+                                        <div class="absolute rounded-[50%] bg-red-500 p-4 flex items-center justify-center">
+                                            <div class="p-1.5 bg-white rounded-[50%] absolute"></div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </button>
+                        {% endfor %}
+
+                    {% else %}
+                        <p class="text-[var(--secondary)]">
+                            Get a player's friend code to send them a request!
+                        </p>
+
+                    {% endif %}
+                </div>
+                <form method="POST">
+                    {{ friendCodeForm.hidden_tag() }}
+                    <div class="flex flex-wrap gap-2 pb-5">
+                        <div>
+                            {{ friendCodeForm.friendCode(
+                                class="p-2 rounded-xl w-32 my-2 border-2 bg-[var(--background)] border-[var(--primary)] text-center",
+                                type="text",
+                                required=True,
+                                placeholder="8-digit code"
+                                
+                            )}}
+                        </div>
+                        <button 
+                            class="p-2 bg-[var(--primary)] my-2 w-fit hover:scale-105 rounded-xl text-white shadow-[0_0_1rem_var(--secondary)]"
+                            type="submit"
+                            name="action",
+                            value="friendRequest" 
+                        >
+                            Send Friend Request
+                        </button> 
+                    </div>
+                </form>
+                <p class="text-[var(--secondary)] text-lg">
+                    Your friend code: <span class="text-white">{{ current_user.friend_code }}</span>
+                </p>
+
             </div>
 
             <!-- Buttons -->
@@ -152,7 +249,7 @@
             </p>
 
             <form class="space-y-4" method="POST">
-                {{ form.hidden_tag() }}
+                {{ editForm.hidden_tag() }}
                 <div>
                     <label class="block text-[var(--secondary)] mb-2">
                         Username
