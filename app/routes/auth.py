@@ -4,7 +4,8 @@ from flask_login import login_user, logout_user, login_required
 from app import db
 from app.forms import LoginForm, SignupForm
 from app.models import Account
-
+from app.tokens import generate_token, confirm_token
+from app.email import send_email
 
 auth = Blueprint("auth", __name__)
 
@@ -39,7 +40,22 @@ def login_signup():
                 db.session.add(account)
                 db.session.commit()
 
-                flash("Account created successfully. Please log in.", "signup_success")
+                # Send verification email
+                token = generate_token(account.email, "verify_email")
+
+                verify_url = url_for(
+                    "auth.verify_email",
+                    token=token,
+                    _external=True
+                )
+
+                send_email(
+                    account.email,
+                    "Verify you email",
+                    f"Please verify your email using this link: {verify_url}"
+                )
+
+                flash("Account created successfully. Please check your email to verify your account.", "verification_required")
                 return redirect(url_for("auth.login_signup"))
             else:
                 print(signup_form.errors)
@@ -90,3 +106,23 @@ def login_signup():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+@auth.route("/verify-email/<token>")
+def verify_email(token):
+    email = confirm_token(token, "verify_email", 12 * 60 * 60) # Expires after 12 hours
+
+    if email is None:
+        flash("Verification link is invalid or expired.", "verification_fail")
+        return redirect(url_for("auth.login_signup"))
+
+    account = Account.query.filter_by(email=email).first()
+
+    if account is None:
+        flash("Account not found")
+        return redirect(url_for("auth.login_signup", mode="signup")) 
+    
+    account.is_email_verified = True
+    db.session.commit()
+
+    flash("Email verified. You can now log in", "verification_success")
+    return redirect(url_for("auth.login_signup"))

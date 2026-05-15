@@ -97,7 +97,11 @@
                     {% set category, message = flash_message %}
                     {% if category == "signup_error" %}
                         <p class="text-red-400 text-sm">{{ message }}</p>
-                    {% elif category == "signup_success" %}
+                    {% elif category == "verification_required" %}
+                        <p class="text-green-400 text-sm">{{ message}}</p>
+                    {% elif category == "verification_fail" %}
+                        <p class="text-green-400 text-sm">{{ message}}</p>
+                    {% elif category == "verification_success" %}
                         <p class="text-green-400 text-sm">{{ message}}</p>
                     {% endif %}
                 {% endif %}
