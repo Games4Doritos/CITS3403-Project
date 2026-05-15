@@ -21,7 +21,7 @@
                     {{current_user.profile.username if current_user.profile else "My Profile"}}
                 </a>
             {% else %}
-                <a href="{{ url_for('auth.login_signup') }}">
+                <a href="{{ url_for('auth.auth_page') }}">
                     Log In / Sign Up
                 </a>
             {% endif %}
