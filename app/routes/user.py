@@ -108,31 +108,56 @@ def profile():
                     flash("Friend code invalid.")
                     return redirect(url_for("user.profile"))
                 
-            elif formType == "gift":
+            elif formType == "gift/accept":
                 
                 if friendActionForm.validate_on_submit():
-                    print(friendActionForm.friendEmail.data)
-                    #to do for future issue
-                    flash('Bonus Gifted!')
-                    return redirect(url_for("user.profile"))
+                    friendEmail = friendActionForm.friendEmail.data
+                    friend = Account.query.filter_by(email=friendEmail).first()
+                    friendship = Friendship.query.filter(db.or_(db.and_(Friendship.friendID1 == current_user.id, Friendship.friendID2 == friend.id), 
+                                                                db.and_(Friendship.friendID2 == current_user.id, Friendship.friendID1 == friend.id))).first()
+                    if friendship.pending:
+                        if current_user.id == friendship.friendID2:
+                            # successfully make the friendship accepted (not pending)
+                            friendship.pending = False
+                            db.session.commit()
+                        
+                            flash('Friend Request Accepted!')
+                            return redirect(url_for("user.profile"))
+                        else:
+                            flash("You can't accept your own request!")
+                            return redirect(url_for("user.profile"))
+                        
+                    else:
+                        #to do for future issue
+                        flash('Bonus Gifted!')
+                        return redirect(url_for("user.profile"))
                 
                 else:
                     flash('That friend already has their daily bonus.')
                     return redirect(url_for("user.profile"))
                 
-            elif formType == "remove":
+            elif formType == "remove/reject":
                 if friendActionForm.validate_on_submit():
                     friendEmail = friendActionForm.friendEmail.data
                     friend = Account.query.filter_by(email=friendEmail).first()
-                    
-                    friendship = Friendship.query.filter(db.or_(Friendship.friendID1 == current_user.id and Friendship.friendID2 == friend.id, 
-                                                                Friendship.friendID2 == current_user.id and Friendship.friendID1 == friend.id)).first()
-                    db.session.delete(friendship)
-                    db.session.commit()
-                    flash('Friend Removed.')
-                    return redirect(url_for("user.profile"))
+                    friendship = Friendship.query.filter(db.or_(db.and_(Friendship.friendID1 == current_user.id, Friendship.friendID2 == friend.id), 
+                                                                db.and_(Friendship.friendID2 == current_user.id, Friendship.friendID1 == friend.id))).first()
+                    if friendship.pending:
+                        if current_user.id == friendship.friendID2:
+                            db.session.delete(friendship)
+                            db.session.commit()
+                            flash('Friend Request Rejected.')
+                            return redirect(url_for("user.profile"))
+                        else:
+                            flash("You can't reject your own request!")
+                            return redirect(url_for("user.profile"))
+                    else:
+                        db.session.delete(friendship)
+                        db.session.commit()
+                        flash('Friend Removed.')
+                        return redirect(url_for("user.profile"))
                 else:
-                    flash('Failed to remove friend')
+                    flash('Invalid request to remove/ friend.')
                     return redirect(url_for("user.profile"))
             else:
                 flash('Invalid Action.')
@@ -142,12 +167,21 @@ def profile():
     friends = Friendship.query.filter(db.or_(Friendship.friendID1==current_user.id, Friendship.friendID2 == current_user.id)).all()
     friendAccounts = []
     for i in friends:
-        if i.friendID1 == current_user.id:
-            iAccount = Account.query.filter_by(id=i.friendID2).first()
-            friendAccounts.append({'email': iAccount.email, 'username':iAccount.profile.username})
+        iAccount = None
+        if i.pending:
+            if i.friendID1 == current_user.id:
+                # don't show a pending request that you sent
+                continue
+            else:
+                iAccount = Account.query.filter_by(id=i.friendID1).first()
+                friendAccounts.append({'email': iAccount.email, 'username':iAccount.profile.username, 'pending':True})
         else:
-            iAccount = Account.query.filter_by(id=i.friendID1).first()
-            friendAccounts.append({'email': iAccount.email, 'username':iAccount.profile.username})
+            if i.friendID1 == current_user.id:
+                iAccount = Account.query.filter_by(id=i.friendID2).first()
+            else:
+                iAccount = Account.query.filter_by(id=i.friendID1).first()
+            friendAccounts.append({'email': iAccount.email, 'username':iAccount.profile.username, 'pending':False})
+            
     print(friendAccounts)
     
     # New logged-in users must create profile first

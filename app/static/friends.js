@@ -20,10 +20,22 @@ function selectFriend(email){
         info.children[0].textContent = friends[curFriend].email;
     }
 
-    info.style.display = "flex";
-
     const friendActionForm = document.getElementById('friendActionForm');
     friendActionForm.friendEmail.value = friends[curFriend].email;
+
+    if (friends[curFriend].pending){
+        friendActionForm.children[2].children[0].textContent = "Accept Friend";
+        friendActionForm.children[3].children[0].textContent = "Reject Friend";
+    }
+    else{
+        friendActionForm.children[2].children[0].textContent = "Gift Bonus";
+        friendActionForm.children[3].children[0].textContent = "Remove Friend";
+    }
+
+    info.style.display = "block";
+
+    
+    
 
 
 }
