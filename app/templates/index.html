@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Game Name - Home{% endblock %}
+{% block title %}Technoanimal Runner - Home{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -11,9 +11,11 @@
     <div class="h-screen flex flex-col justify-center">
         <h1 class="text-7xl text-[var(--primary)] py-10"
             style="text-shadow: 0 0 3rem var(--secondary), 0 0 2rem var(--primary);">
-            Game Name
+            Technoanimal Runner
         </h1>
-        <h3 class="text-lg text-[var(--secondary)] pb-16" style="text-shadow: 0 0 2rem var(--secondary), 0 0 1rem var(--primary);">Game Description</h3>
+        <h3 class="text-lg text-[var(--secondary)] pb-16" style="text-shadow: 0 0 2rem var(--secondary), 0 0 1rem var(--primary);">
+            Join the run. Test your skills. Dominate the leaderboard.
+        </h3>
         <div class="flex justify-center flex-wrap gap-10 text-lg">
             <a href="{{ url_for('game.play') }}" class="">
                 <div class="p-7 bg-[var(--primary)] hover:scale-105 w-fit rounded-3xl shadow-[0_0_1rem_var(--secondary)]">
