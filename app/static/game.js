@@ -114,6 +114,29 @@ const end = document.getElementById("end");
 let score = 0;
 let baseMultiplier = 1;
 let bonusMultiplier = 0;
+// Sabotage debuff (fetched from server on game load)
+let sabotageDebuff = 0;
+
+// Check if current player is sabotaged
+async function checkSabotageStatus() {
+    try {
+        const response = await fetch('/play/sabotage-status');
+        const data = await response.json();
+        if (data.sabotaged) {
+            sabotageDebuff = data.debuff;
+            // Show warning to player
+            const sabotageWarning = document.getElementById('sabotageWarning');
+            if (sabotageWarning) {
+                sabotageWarning.style.display = 'block';
+            }
+        }
+    } catch (error) {
+        console.error('Error checking sabotage status:', error);
+    }
+}
+
+checkSabotageStatus();
+
 const scoreElement = document.getElementById("score");
 const multiplierElement = document.getElementById("multiplier");
 
@@ -163,8 +186,9 @@ function frame(){
     // baseMultiplier maxes out at 5 - takes 800 seconds (~13 minutes) to reach
     baseMultiplier = Number(Math.round(1 + 0.1 * Math.min(Math.floor(runDuration * 0.00005),40) + 'e' + 1) + 'e-' + 1);
     // add baseMultiplier and bonusMultiplier together (done safely and rounded to avoid precision errors)
-    let multiplier = Number(Math.round(baseMultiplier + bonusMultiplier + 'e' + 1) + 'e-' + 1);
-    multiplierElement.textContent = `${multiplier}`;
+    let multiplier = Number(Math.round(baseMultiplier + bonusMultiplier - sabotageDebuff + 'e' + 1) + 'e-' + 1);
+    // Make sure multiplier never goes below 0.1
+    if (multiplier < 0.1) multiplier = 0.1;    multiplierElement.textContent = `${multiplier}`;
     // score is 1/10 * frame time at each frame, multiplied by the multiplier
     score += (deltaTime * 0.1) * multiplier;
     scoreElement.textContent = `${Math.round(score)}`;
