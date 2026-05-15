@@ -30,6 +30,7 @@
             </div>
         </div>
 
+        {% if mode != "resend-verification" and mode != "forgot-password" and mode != "reset-password" %}
         <!--Login Form-->
         <form id="login_form" class="space-y-5" method="POST" action="{{ url_for('auth.login') }}">
             {{ login_form.hidden_tag() }} <!-- CSRF protection token -->
@@ -78,12 +79,17 @@
                     </p>
                 {% endfor %}
             </div>
+
+            <a href="{{ url_for('auth.forgot_password') }}" class="block text-[var(--primary)] mb-2">
+                Forgot password?
+            </a>
             
-            <button class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
-                type="submit" 
-                name="form_type" 
-                value="login">Log In
-            </button> 
+            <div>
+            {{ login_form.submit(
+                    class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                ) 
+            }}
+            </div>
         </form>              
 
         <!--Sign Up Form-->
@@ -153,22 +159,84 @@
                 {% endfor %}
             </div>
 
-            <button class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
-                type="submit" 
-                name="form_type" 
-                value="signup">Sign Up
-            </button> 
+            <div>
+            {{ signup_password_form.submit(
+                    class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                ) 
+            }}
+            </div>
         </form>
+        {% endif %}
 
         <!--Resend_verification_form-->
+        {% if mode == "resend-verification" %}
         <form id="resend_verification_form" class="space-y-5" method="POST" action="{{ url_for('auth.resend_verification') }}">
             <button class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
                 type="submit">
                 Resend verification email
             </button>
         </form>
+        {% endif %}
 
-    
+        <!--Forgot password form-->
+        <form id="forgot_password_form" class="space-y-5" method="POST" action="{{ url_for('auth.forgot_password') }}">
+            {{ reset_request_form.hidden_tag() }}
+
+            <div>
+            <label class="block text-[var(--primary)] mb-2">Email</label>
+                {{ reset_request_form.email(
+                    class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]",
+                    type="email",
+                    placeholder="example@mail.com",
+                    required=True
+                    )
+                }}
+            </div>
+
+            <div>
+            {{ reset_password_form.submit(
+                    class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                ) 
+            }}
+            </div>
+
+        </form>
+
+        <!--Reset password form-->
+        {% if mode == "reset-password" and token %}
+        <form id="reset_password_form" class="space-y-5" method="POST" action="{{ url_for('auth.reset_password', token=token) }}">
+            {{ reset_password_form.hidden_tag() }}
+
+            <div>
+                <label class="block text-[var(--primary)] mb-2">New Password (minimum 6 characters)</label>
+                {{ reset_password_form.password(
+                    class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]",
+                    placeholder="Create your new password",
+                    minlength=6,
+                    required=True
+                    )
+                }}
+            </div>
+
+            <div>
+                <label class="block text-[var(--primary)] mb-2">Confirm Password</label>
+                {{ reset_password_form.confirm_password(
+                    class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]",
+                    placeholder="Confirm your new password",
+                    required=True
+                    )
+                }}
+            </div>
+
+            <div>
+            {{ reset_password_form.submit(
+                class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                ) 
+            }}
+            </div>
+        </form>
+        {% endif %}
+
     </div>
 </section>
 

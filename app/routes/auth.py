@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import login_user, logout_user, login_required
 
 from app import db
-from app.forms import LoginForm, SignupForm
+from app.forms import LoginForm, SignupForm, RequestResetForm, ResetPasswordForm
 from app.models import Account
 from app.tokens import generate_token, confirm_token
 from app.email import send_email
@@ -12,12 +12,15 @@ auth = Blueprint("auth", __name__)
 @auth.route("/auth")
 def auth_page():
     mode = request.args.get("mode")
-
+    token = request.args.get("token")
     return render_template(
         "auth.html",
         login_form=LoginForm(),
         signup_form=SignupForm(),
-        mode=mode
+        reset_request_form=RequestResetForm(),
+        reset_password_form=ResetPasswordForm(),
+        mode=mode,
+        token=token
     )
 
 @auth.route("/signup", methods=["POST"])
@@ -161,6 +164,69 @@ def resend_verification():
         "auth.auth_page",
         mode="resend-verification"
     ))
+
+@auth.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+
+    reset_request_form = RequestResetForm()
+
+    if reset_request_form.validate_on_submit():
+
+        account = Account.query.filter_by(email=reset_request_form.email.data).first()
+
+        if account:
+            token = generate_token(account.email, "password-reset")
+
+            reset_link = url_for(
+                "auth.reset_password",
+                token=token,
+                _external=True
+            )
+
+            body = f"To reset your password, visit: {reset_link} If you did not request this password reset, ignore this email."
+
+            send_email(account.email, "Password Reset Request", body)
+
+        flash(
+            "If the email exists, a reset link has been sent.",
+            "reset_required"
+        )
+
+        return redirect(url_for("auth.auth_page"))
+
+    return redirect(url_for("auth.auth_page", mode="forgot-password"))
+
+@auth.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+
+    email = confirm_token(token, "password-reset", max_age= 60 * 60)
+
+    if email is None:
+        flash("Invalid or expired reset link.", "danger")
+
+        return redirect(url_for("auth.auth_page", mode="forgot-password"))
+
+    account = Account.query.filter_by(email=email).first()
+
+    if account is None:
+        flash("Account not found.", "danger")
+
+        return redirect(url_for("auth.auth_page"))
+
+    reset_password_form = ResetPasswordForm()
+
+    if request.method == "POST":
+        if reset_password_form.validate_on_submit():
+
+            account.set_password(reset_password_form.password.data)
+
+            db.session.commit()
+
+            flash("Password reset successful. You can now log in.", "reset_success")
+
+            return redirect(url_for("auth.auth_page"))
+
+    return redirect(url_for("auth.auth_page", mode="reset-password",token=token))
 
 @auth.route("/logout")
 @login_required

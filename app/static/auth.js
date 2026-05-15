@@ -19,15 +19,30 @@ document.addEventListener("DOMContentLoaded", function(){
     const loginForm = document.getElementById("login_form");
     const signupForm = document.getElementById("signup_form");
     const resendVerificationForm = document.getElementById("resend_verification_form");
+    const forgotPasswordForm = document.getElementById("forgot_password_form");
+    const resetPasswordForm = document.getElementById("reset_password_form");
 
     const underline = document.getElementById("tab-underline");
 
     function hideAllForms() {
-        loginForm.style.display = "none";
-        signupForm.style.display = "none";
+         if (loginForm) {
+            loginForm.style.display = "none";
+        }
+
+        if (signupForm) {
+            signupForm.style.display = "none";
+        }
 
         if (resendVerificationForm) {
             resendVerificationForm.style.display = "none";
+        }
+
+        if (forgotPasswordForm) {
+            forgotPasswordForm.style.display = "none";
+        }
+
+        if (resetPasswordForm) {
+            resetPasswordForm.style.display = "none";
         }
     }
 
@@ -95,6 +110,26 @@ document.addEventListener("DOMContentLoaded", function(){
             resendVerificationForm.style.display = "block";
         }
     }
+
+    function displayForgotPasswordForm() {
+        // form title and subtitle
+        authTitle.textContent = "Forgot your password?";
+        authSubtilte.textContent = "Enter your email to reset";
+
+        hideAllForms();
+        authTabs.style.display = "none";
+        forgotPasswordForm.style.display = "block";
+    }
+
+    function displayResetPasswordForm() {
+        // form title and subtitle
+        authTitle.textContent = "Reset your password";
+        authSubtilte.textContent = "Don't forget next time~";
+
+        hideAllForms();
+        authTabs.style.display = "none";
+        resetPasswordForm.style.display = "block";
+    }
     
     // check URL param
     // "mode" parameter defined here in case of need sign up form to be displayed first
@@ -106,6 +141,10 @@ document.addEventListener("DOMContentLoaded", function(){
         displaySignup();
     } else if (mode ==="resend-verification"){
         displayResendVerification();
+    } else if (mode ==="forgot-password"){
+        displayForgotPasswordForm();
+    } else if (mode ==="reset-password"){
+        displayResetPasswordForm();
     } else {
         displayLogin(); //default
     }
