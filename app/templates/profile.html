@@ -2,6 +2,15 @@
 
 {% block title %}Game Name - Profile{% endblock %}
 
+
+{% block extra_scripts %}
+    <script> 
+        const friends = {{ friendAccounts | tojson }};
+    </script>
+    <script defer src="{{ url_for('static', filename='friends.js')}}"></script>
+{% endblock %}
+    
+
 {% block content %}
 <section class="w-full flex justify-center items-center pt-20 py-4 px-6">
     <div class="w-full max-w-3xl">
@@ -116,37 +125,87 @@
                 <h3 class="text-[var(--primary)] text-xl mb-4">
                     Friends
                 </h3>
-                <p class="text-[var(--secondary)] w-fit border-b border-[var(--primary)] pb-2 mb-2">
+                <p class="text-[var(--secondary)] w-fit border-b border-[var(--primary)] pb-2 mb-4">
                     You can give a friendship boost to one friend every 24 hours!
                 </p>
-                <div class="flex">
-                    {% for friend in friendAccounts %}
-                        <div class="rounded-[50%] border border-[var(--primary)] w-fit p-2">
-                            {{friend.profile.username}}
-                        </div>
-
-
-                    {% endfor %}
-
-
+                <div class="gap-2 flex-wrap hidden" id="friendInfo">
+                    <div class="border border-[var(--primary)] p-2 rounded-xl my-2 mr-5 shadow-[0_0_1rem_var(--secondary)] text-[var(--primary)]">
+                        Username
+                    </div>
+                    <form method="POST" id="friendActionForm" class="gap-2 flex-wrap flex">
+                        {{ friendCodeForm.hidden_tag()}}
+                        <input type="hidden" name="friendEmail" value="">
+                        <button 
+                            type="submit"
+                            name="action"
+                            value="gift"
+                        >
+                            <div class="rounded-2xl bg-[var(--primary)] p-2 my-2 w-fit shadow-[0_0_1rem_var(--secondary)] hover:scale-105">
+                                Gift Bonus
+                            </div>
+                        </button>
+                        <button 
+                            type="submit"
+                            name="action"
+                            value="remove"
+                        >
+                            <div class="rounded-2xl bg-[var(--background)] p-2 my-2 w-fit border-[var(--primary)] border text-[var(--primary)] hover:scale-105">
+                                Remove Friend
+                            </div>
+                        </button>
+                    </form>
+                    
                 </div>
-                <p class="text-[var(--secondary)]">
-                    Get a player's friend code to send them a request!
-                </p>
+                <div class="flex py-5 flex-wrap gap-2">
+                    {% if friendAccounts%}
+                        {% for friend in friendAccounts %}
+                            <button onclick="selectFriend('{{friend['email']}}')" >
+                                <div 
+                                    class="group relative rounded-[50%] border border-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)] 
+                                        p-2 w-16 h-16 text-xl flex items-center justify-center text-[var(--primary)] hover:scale-105"
+                                >
+                                    {% if friend["username"] %}
+                                        {{friend["username"][:2]}}
+                                    {% else %}
+
+                                        {{friend["email"][:2]}}
+                                    {% endif %}
+                                </div>
+                            </button>
+                        {% endfor %}
+
+                    {% else %}
+                        <p class="text-[var(--secondary)]">
+                            You don't have any friends right now, get a player's friend code to send them a request!
+                        </p>
+
+                    {% endif %}
+                </div>
                 <form method="POST">
                     {{ friendCodeForm.hidden_tag() }}
-                    <div>
-                        {{ friendCodeForm.friendCode(
-                            class="p-2 rounded-xl w-fit my-2 border-2 bg-[var(--secondary)] border-[var(--primary)]",
-                            type="text",
-                            required=True
-                        )}}
+                    <div class="flex flex-wrap gap-2 pb-5">
+                        <div>
+                            {{ friendCodeForm.friendCode(
+                                class="p-2 rounded-xl w-32 my-2 border-2 bg-[var(--background)] border-[var(--primary)] text-center",
+                                type="text",
+                                required=True,
+                                placeholder="8-digit code"
+                                
+                            )}}
+                        </div>
+                        <button 
+                            class="p-2 bg-[var(--primary)] my-2 w-fit hover:scale-105 rounded-xl text-white shadow-[0_0_1rem_var(--secondary)]"
+                            type="submit"
+                            name="action",
+                            value="friendRequest" 
+                        >
+                            Send Friend Request
+                        </button> 
                     </div>
                 </form>
                 <p class="text-[var(--secondary)] text-lg">
                     Your friend code: <span class="text-white">{{ current_user.friend_code }}</span>
                 </p>
-
 
             </div>
 

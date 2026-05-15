@@ -71,3 +71,6 @@ class FriendCodeForm(FlaskForm):
         if account and account.id == current_user.id:
             return False
         return True
+    
+class FriendActionForm(FlaskForm):
+    friendEmail = StringField('Email', validators=[DataRequired('Required'), Length(max=30, message='Max length (30) exceeded'), Email(message='Invalid email format')])

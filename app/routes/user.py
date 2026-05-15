@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 
 from app import db
 from app.models import Profile, Account, Friendship
-from app.forms import EditProfileForm, FriendCodeForm
+from app.forms import EditProfileForm, FriendCodeForm, FriendActionForm
 
 
 user = Blueprint("user", __name__)
@@ -13,13 +13,14 @@ user = Blueprint("user", __name__)
 @login_required
 def profile():
     mode = request.args.get('mode', 'view')
+    # Create friend code form
     friendCodeForm = FriendCodeForm()
+    
+    # Create friend action form
+    friendActionForm = FriendActionForm()
 
     # Create edit profile form
     editForm = EditProfileForm()
-    
-    #query all the user's friends
-    
 
     # Handle profile form submission
     if request.method == 'POST':
@@ -57,64 +58,101 @@ def profile():
                 return redirect(url_for("user.profile", mode="edit"))
         
         else:
-            # Save friend code form after validation
-            if friendCodeForm.validate_on_submit():
-                
-                friendCode = friendCodeForm.friendCode.data
-                # Checks if a user with that code exists
-                friendingAccount = Account.query.filter_by(friend_code=friendCode).first()
-                
-                
-                if not friendingAccount:
-                    flash("An account with that friend code doesn't exist!")
+            
+            formType = request.form.get('action')
+            if formType == "friendRequest":
+                # Save friend code form after validation
+                if friendCodeForm.validate_on_submit():
+                    
+                    friendCode = friendCodeForm.friendCode.data
+                    # Checks if a user with that code exists
+                    friendingAccount = Account.query.filter_by(friend_code=friendCode).first()
+                    
+                    
+                    if not friendingAccount:
+                        flash("An account with that friend code doesn't exist!")
+                        return redirect(url_for("user.profile"))
+                    
+                    # Checks if the friend code is their own
+                    if friendCodeForm.validate_friend_code(friendCode):
+                        
+                        friends = Friendship.query.filter(db.or_(Friendship.friendID1==current_user.id, Friendship.friendID2 == current_user.id)).all()
+                        
+                        #checks if the friendship already exists
+                        alreadyExists = False
+                        for i in friends:
+                            if (i.friendID1 == current_user.id and i.friendID2 == friendingAccount.id) or (i.friendID1 == friendingAccount.id and i.friendID2 == current_user.id):
+                                alreadyExists = True
+                                break
+                        
+                        if alreadyExists:
+                            flash("Friend already exists!")
+                            return redirect(url_for("user.profile"))
+                        
+                        # checks if you have the friend limit
+                        if len(friends) == 10:
+                            flash("You can't make any more friends! Remove one to make ")
+                            return redirect(url_for("user.profile"))
+                        
+                        
+                        newFriendship = Friendship(friendID1=current_user.id, friendID2=friendingAccount.id, pending=True)
+                        db.session.add(newFriendship)
+                        db.session.commit()
+                        flash("Friend Request Sent.")
+                    else:
+                        flash("You can't friend yourself!")
+                    
+                    return redirect(url_for("user.profile"))
+            
+                else:
+                    flash("Friend code invalid.")
                     return redirect(url_for("user.profile"))
                 
-                # Checks if the friend code is their own
-                if friendCodeForm.validate_friend_code(friendCode):
-                    
-                    friends = Friendship.query.filter(db.or_(Friendship.friendID1==current_user.id, Friendship.friendID2 == current_user.id)).all()
-                    
-                    #checks if the friendship already exists
-                    alreadyExists = False
-                    for i in friends:
-                        if (i.friendID1 == current_user.id and i.friendID2 == friendingAccount.id) or (i.friendID1 == friendingAccount.id and i.friendID2 == current_user.id):
-                            alreadyExists = True
-                            break
-                    
-                    if alreadyExists:
-                        flash("Friend already exists!")
-                        return redirect(url_for("user.profile"))
-                    
-                    # checks if you have the friend limit
-                    if len(friends) == 10:
-                        flash("You can't make any more friends! Remove one to make ")
-                        return redirect(url_for("user.profile"))
-                    
-                    
-                    newFriendship = Friendship(friendID1=current_user.id, friendID2=friendingAccount.id, pending=True)
-                    db.session.add(newFriendship)
-                    db.session.commit()
-                    flash("Friend Request Sent.")
-                else:
-                    flash("You can't friend yourself!")
+            elif formType == "gift":
                 
-                return redirect(url_for("user.profile"))
-        
+                if friendActionForm.validate_on_submit():
+                    print(friendActionForm.friendEmail.data)
+                    #to do for future issue
+                    flash('Bonus Gifted!')
+                    return redirect(url_for("user.profile"))
+                
+                else:
+                    flash('That friend already has their daily bonus.')
+                    return redirect(url_for("user.profile"))
+                
+            elif formType == "remove":
+                if friendActionForm.validate_on_submit():
+                    friendEmail = friendActionForm.friendEmail.data
+                    friend = Account.query.filter_by(email=friendEmail).first()
+                    
+                    friendship = Friendship.query.filter(db.or_(Friendship.friendID1 == current_user.id and Friendship.friendID2 == friend.id, 
+                                                                Friendship.friendID2 == current_user.id and Friendship.friendID1 == friend.id)).first()
+                    db.session.delete(friendship)
+                    db.session.commit()
+                    flash('Friend Removed.')
+                    return redirect(url_for("user.profile"))
+                else:
+                    flash('Failed to remove friend')
+                    return redirect(url_for("user.profile"))
             else:
-                flash("Friend code invalid.")
+                flash('Invalid Action.')
                 return redirect(url_for("user.profile"))
+                
 
     friends = Friendship.query.filter(db.or_(Friendship.friendID1==current_user.id, Friendship.friendID2 == current_user.id)).all()
     friendAccounts = []
     for i in friends:
         if i.friendID1 == current_user.id:
-            friendAccounts.append(Account.query.filter_by(id=i.friendID2).first())
+            iAccount = Account.query.filter_by(id=i.friendID2).first()
+            friendAccounts.append({'email': iAccount.email, 'username':iAccount.profile.username})
         else:
-            friendAccounts.append(Account.query.filter_by(id=i.friendID1).first())
+            iAccount = Account.query.filter_by(id=i.friendID1).first()
+            friendAccounts.append({'email': iAccount.email, 'username':iAccount.profile.username})
     print(friendAccounts)
     
     # New logged-in users must create profile first
     if not current_user.profile and mode != 'edit':
         return redirect(url_for("user.profile", mode="edit"))
 
-    return render_template('profile.html', mode=mode, friendCodeForm=friendCodeForm, editForm=editForm, friendAccounts=friendAccounts)
+    return render_template('profile.html', mode=mode, friendCodeForm=friendCodeForm, editForm=editForm, 
+                           friendAccounts=friendAccounts, friendActionForm = friendActionForm)
