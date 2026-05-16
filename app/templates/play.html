@@ -3,6 +3,10 @@
 {% block title %}Technoanimal Runner - Play{% endblock %}
 
 {% block extra_head %}
+    <script>
+    // Injected by Flask - debuff value for this run
+        const sabotageDebuff = {{ debuff }};
+    </script>
     <script src="{{ url_for('static', filename='game.js')}}" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {% endblock %}
@@ -10,6 +14,13 @@
 {% block content %}s
     <div class="items-center flex justify-center h-screen">
         <div class="shadow-[0_0_2rem_var(--secondary)] rounded-3xl h-[500px] w-[900px] shrink-0">
+            <!-- Sabotage warning -->
+            <div id="sabotageWarning" {% if debuff == 0 %}style="display:none"{% endif %}
+                class="absolute top-16 left-1/2 transform -translate-x-1/2 z-20 px-4 py-2 rounded-xl border border-red-500/50 bg-red-500/10 text-red-400 text-sm">
+                    <i class="fa fa-bolt"></i> You have been sabotaged! -{{ debuff }}x multiplier this run
+            </div>
+            <!--End Run Screen-->
+            
             <!--End Run Screen-->
             <div class="absolute w-[900px] h-[500px] hidden items-center justify-center z-10 backdrop-brightness-[80%] rounded-3xl" id="end">
                 <div>
