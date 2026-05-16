@@ -56,3 +56,35 @@ class LeaderboardTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"PlayerOne", response.data)
         self.assertIn(b"500", response.data)
+
+    # Test that leaderboard ranks higher scores before lower scores
+    def test_leaderboard_orders_scores_highest_first(self):
+
+        # Create player with lower score
+        self.create_player(
+            email="low@example.com",
+            username="LowScore",
+            score=100
+        )
+
+        # Create player with higher score
+        self.create_player(
+            email="high@example.com",
+            username="HighScore",
+            score=900
+        )
+
+        # Request leaderboard page
+        response = self.client.get("/leaderboard")
+
+        # Check page loads successfully
+        self.assertEqual(response.status_code, 200)
+
+        # Convert HTML response into readable text
+        page_text = response.data.decode()
+
+        # Verify higher score player appears before lower score player
+        self.assertLess(
+            page_text.index("HighScore"),
+            page_text.index("LowScore")
+        )
