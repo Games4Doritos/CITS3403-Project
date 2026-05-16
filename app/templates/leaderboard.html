@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Game Name - Leaderboard{% endblock %}
+{% block title %}Technoanimal Runner - Leaderboard{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -73,7 +73,7 @@
         </div>
 
         <div class="flex justify-center mt-8">
-            <a href="{{ url_for('index') }}">
+            <a href="{{ url_for('main.index') }}">
                 <div class="px-8 py-3 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg font-bold shadow-[0_0_1rem_var(--secondary)] transition cursor-pointer">
                     Back to Home
                 </div>

@@ -1,10 +1,30 @@
 {% extends "base.html" %}
 
-{% block title %}Game Name - Profile{% endblock %}
+{% block title %}Technoanimal Runner - Profile{% endblock %}
+
+
+{% block extra_scripts %}
+    <script> 
+        const friends = {{ friendAccounts | tojson }};
+    </script>
+    <script defer src="{{ url_for('static', filename='friends.js')}}"></script>
+{% endblock %}
+    
 
 {% block content %}
 <section class="w-full flex justify-center items-center pt-20 py-4 px-6">
     <div class="w-full max-w-3xl">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="mb-4 space-y-2">
+                    {% for message in messages %}
+                        <div class="rounded-xl border border-[var(--primary)] bg-[rgba(255,255,255,0.05)] px-4 py-3 text-center text-[var(--secondary)]">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
         {% if mode != 'edit' %}
 
@@ -86,13 +106,6 @@
 
                     <p>
                         <span class="text-[var(--secondary)]">
-                            Friend Code:
-                        </span>
-                        {{ current_user.friend_code if current_user.friend_code else 'N/A' }}
-                    </p>
-
-                    <p>
-                        <span class="text-[var(--secondary)]">
                             Longest Run Time:
                         </span>
                         {{ current_user.best_stats.longest_time if current_user.best_stats else 0 }} seconds
@@ -107,22 +120,117 @@
                 </div>
             </div>
 
+            <!-- Friends Section-->
+            <div class="border border-[var(--primary)] rounded-2xl p-4 mb-5">
+                <h3 class="text-[var(--primary)] text-xl mb-4">
+                    Friends
+                </h3>
+                <p class="text-[var(--secondary)] w-fit border-b border-[var(--primary)] pb-2 mb-4">
+                    You can give a friendship boost to one friend every 24 hours!
+                </p>
+                <div class="hidden rounded-2xl border-[var(--primary)] shadow-[0_0_1rem_var(--primary)] border w-fit p-5" id="friendInfo">
+                    <div class="border-b border-[var(--primary)] p-2 my-2 mr-5 text-[var(--secondary)] text-center text-xl w-full">
+                        Username
+                    </div>
+                    <form method="POST" id="friendActionForm" class="gap-2 flex-wrap flex">
+                        {{ friendCodeForm.hidden_tag()}}
+                        <input type="hidden" name="friendEmail" value="">
+                        <button 
+                            type="submit"
+                            name="action"
+                            value="gift/accept"
+                        >
+                            <div class="rounded-2xl bg-[var(--primary)] p-2 my-2 w-fit shadow-[0_0_1rem_var(--secondary)] hover:scale-105">
+                                Gift Bonus
+                            </div>
+                        </button>
+                        <button 
+                            type="submit"
+                            name="action"
+                            value="remove/reject"
+                        >
+                            <div class="rounded-2xl bg-[var(--background)] p-2 my-2 w-fit border-[var(--primary)] border text-[var(--primary)] hover:scale-105">
+                                Remove Friend
+                            </div>
+                        </button>
+                    </form>
+                    
+                </div>
+                <div class="flex py-5 flex-wrap gap-2">
+                    {% if friendAccounts%}
+                        {% for friend in friendAccounts %}
+                            <button onclick="selectFriend('{{friend['email']}}')" class="hover:scale-105">
+                                <div 
+                                    class="relative rounded-[50%] border w-16 h-16 text-xl flex items-center justify-center 
+                                        text-[var(--primary)] border-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)]"
+                                >
+                                    {% if friend['username'] %}
+                                        {{friend['username'][:2]}}
+                                    {% else %}
+                                        {{friend['email'][:2]}}
+                                    {% endif %}
+                                </div>
+                                {% if friend['pending'] %}
+                                    <div class="relative left-[60%] bottom-[120%]">
+                                        <div class="absolute rounded-[50%] bg-red-500 p-4 flex items-center justify-center">
+                                            <div class="p-1.5 bg-white rounded-[50%] absolute"></div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </button>
+                        {% endfor %}
+
+                    {% else %}
+                        <p class="text-[var(--secondary)]">
+                            Get a player's friend code to send them a request!
+                        </p>
+
+                    {% endif %}
+                </div>
+                <form method="POST">
+                    {{ friendCodeForm.hidden_tag() }}
+                    <div class="flex flex-wrap gap-2 pb-5">
+                        <div>
+                            {{ friendCodeForm.friendCode(
+                                class="p-2 rounded-xl w-32 my-2 border-2 bg-[var(--background)] border-[var(--primary)] text-center",
+                                type="text",
+                                required=True,
+                                placeholder="8-digit code"
+                                
+                            )}}
+                        </div>
+                        <button 
+                            class="p-2 bg-[var(--primary)] my-2 w-fit hover:scale-105 rounded-xl text-white shadow-[0_0_1rem_var(--secondary)]"
+                            type="submit"
+                            name="action",
+                            value="friendRequest" 
+                        >
+                            Send Friend Request
+                        </button> 
+                    </div>
+                </form>
+                <p class="text-[var(--secondary)] text-lg">
+                    Your friend code: <span class="text-white">{{ current_user.friend_code }}</span>
+                </p>
+
+            </div>
+
             <!-- Buttons -->
             <div class="flex flex-col md:flex-row justify-center gap-4 mb-2">
 
-                <a href="{{ url_for('profile', mode='edit') }}" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
+                <a href="{{ url_for('user.profile', mode='edit') }}" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
                     Edit Profile
                 </a>
 
-                <a href="{{ url_for('leaderboard') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                <a href="{{ url_for('leaderboard.global_rank') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                     View Leaderboard
                 </a>
 
-                <a href="{{ url_for('index') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                <a href="{{ url_for('main.index') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                     Back to Home
                 </a>
 
-                <a href="{{ url_for('logout') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                <a href="{{ url_for('auth.logout') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                     Log Out
                 </a>
             </div>
@@ -141,6 +249,7 @@
             </p>
 
             <form class="space-y-4" method="POST">
+                {{ editForm.hidden_tag() }}
                 <div>
                     <label class="block text-[var(--secondary)] mb-2">
                         Username
@@ -170,7 +279,7 @@
                         Save Changes
                     </button>
 
-                    <a href="{{ url_for('profile') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
+                    <a href="{{ url_for('user.profile') }}" class="border border-[var(--primary)] text-[var(--primary)] px-6 py-3 rounded-2xl text-center hover:bg-[rgba(255,255,255,0.05)] transition">
                         Back to Profile
                     </a>
                 </div>
