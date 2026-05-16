@@ -59,7 +59,6 @@ class LeaderboardTestCase(BaseTestCase):
 
     # Test that leaderboard ranks higher scores before lower scores
     def test_leaderboard_orders_scores_highest_first(self):
-
         # Create player with lower score
         self.create_player(
             email="low@example.com",
@@ -88,3 +87,15 @@ class LeaderboardTestCase(BaseTestCase):
             page_text.index("HighScore"),
             page_text.index("LowScore")
         )
+
+    # Test leaderboard handles empty score list correctly
+    def test_empty_leaderboard_page_loads(self):
+
+        # Request leaderboard page with no players added
+        response = self.client.get("/leaderboard")
+
+        # Check page still loads successfully
+        self.assertEqual(response.status_code, 200)
+
+        # Verify leaderboard page content appears
+        self.assertIn(b"Leaderboard", response.data)
