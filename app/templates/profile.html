@@ -38,7 +38,7 @@
             <!-- Top Profile Info -->
             <div class="flex flex-col items-center mb-4">
                 <div class="w-28 h-28 rounded-full border-4 border-[var(--primary)] flex items-center justify-center text-3xl text-[var(--primary)] mb-4 shadow-[0_0_20px_var(--secondary)]">
-                    P
+                    {{ current_user.profile.username[:2] if current_user.profile and current_user.profile.username else 'P' }}
                 </div>
 
                 <h2 class="text-2xl text-white font-semibold">
