@@ -76,3 +76,22 @@ class ProfileTestCase(BaseTestCase):
 
         # Check username appears on page
         self.assertIn(b"Tester", response.data)
+
+    # Test profile edit validation with empty fields
+    def test_edit_profile_rejects_empty_fields(self):
+
+        # Create logged-in user with profile
+        self.create_logged_in_user(with_profile=True)
+
+        # Submit empty username and email
+        response = self.client.post(
+            "/profile",
+            data={
+                "username": "",
+                "email": ""
+            },
+            follow_redirects=True
+        )
+
+        # Check validation message appears
+        self.assertIn(b"Invalid Action.", response.data)
