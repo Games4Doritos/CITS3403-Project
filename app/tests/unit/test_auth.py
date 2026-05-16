@@ -45,7 +45,7 @@ class AuthTestCase(BaseTestCase):
         self.assertFalse(account.is_email_verified, "Signup failed: new account should not be verified yet.")
         self.assertTrue(account.check_password("password123"), "Signup failed: password was not stored correctly.")
         self.assertIsNotNone(account.friend_code, "Signup failed: friend code was not generated.")
-        self.assertEqual(response.status_code, 302, "Signup failed: successful signup should redirect.")
+        self.assertEqual(response.status_code, 302, "Signup failed: After successful signup, expected status code 302 for redirect, but got {response.status_code}.") # Status code 302 means redirect
         self.assertEqual(mock_send_email.call_count, 1, "Signup failed: verification email should be sent exactly once.")
 
     
@@ -68,7 +68,7 @@ class AuthTestCase(BaseTestCase):
         accounts = Account.query.filter_by(email="same@example.com").all()
 
         self.assertEqual(len(accounts), 1, "Duplicate signup failed: duplicate account was created.")
-        self.assertEqual(response.status_code, 302, "Duplicate signup failed: route should redirect after rejection.")
+        self.assertEqual(response.status_code, 302, f"Duplicate signup failed: After failing to create duplicated account, expected status code 302 for redirect, but got {response.status_code}.")
 
     
     # Purpose:
@@ -86,7 +86,7 @@ class AuthTestCase(BaseTestCase):
             }
         )
 
-        self.assertEqual(response.status_code, 302, "Unverified login failed: login attempt should redirect.")
+        self.assertEqual(response.status_code, 302, f"Unverified login failed: After unsuccessful log in unverified account, expected status code 302 for redirect, but got {response.status_code}.")
         self.assertIn("mode=resend-verification", response.location, "Unverified login failed: user should be redirected to resend verification page.")
 
     
@@ -104,7 +104,7 @@ class AuthTestCase(BaseTestCase):
         updated_account = Account.query.filter_by(email="verify@example.com").first()
 
         self.assertTrue(updated_account.is_email_verified, "Email verification failed: account should be marked as verified.")
-        self.assertEqual(response.status_code, 302, "Email verification failed: route should redirect after successful verification.")
+        self.assertEqual(response.status_code, 302, f"Email verification failed: After successful verified, expected status code 302 for redirect, but got {response.status_code}.")
 
     
     # Purpose:
@@ -129,4 +129,4 @@ class AuthTestCase(BaseTestCase):
 
         self.assertFalse(updated_account.check_password("oldpassword"), "Password reset failed: old password should no longer work.")   
         self.assertTrue(updated_account.check_password("newpassword123"), "Password reset failed: new password should work.")
-        self.assertEqual(response.status_code, 302, "Password reset failed: route should redirect after successful reset.")
+        self.assertEqual(response.status_code, 302, f"Password reset failed: After successful reset, expected status code 302 for redirect, but got {response.status_code}.")
