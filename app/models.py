@@ -55,6 +55,7 @@ class BestStats(db.Model):
     jump_count = db.Column(db.Integer, default=0)     # total jump count across all runs
     currency = db.Column(db.Integer, default=0)       # total currency across all runs
     total_games = db.Column(db.Integer, default=0)    # total games played
+    debuffed = db.Column(db.Boolean, default=False)   # sabotage debuff flag
 
     def __repr__(self):
         return f"<BestStats for Account {self.id} - Highscore: {self.highscore}>"
@@ -64,21 +65,3 @@ class Friendship(db.Model):
     friendID1 = db.Column(db.Integer, db.ForeignKey("account.id"), primary_key=True)
     friendID2 = db.Column(db.Integer, db.ForeignKey("account.id"), primary_key=True)
     pending = db.Column(db.Boolean, default=True, nullable=False)
-
-class Sabotage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    # Who is being sabotaged
-    target_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
-    # Who sent the sabotage
-    sender_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
-    # Multiplier reduction amount
-    multiplier_debuff = db.Column(db.Float, default=0.5)
-    # Sabotage lasts for 1 run (deactivated after run ends)
-    active = db.Column(db.Boolean, default=True)
-
-    # Relationships
-    target = db.relationship('Account', foreign_keys=[target_id], backref='received_sabotages')
-    sender = db.relationship('Account', foreign_keys=[sender_id], backref='sent_sabotages')
-
-    def __repr__(self):
-        return f"<Sabotage from Account {self.sender_id} to Account {self.target_id}>"
