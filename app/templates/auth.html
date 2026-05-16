@@ -35,7 +35,7 @@
         <form id="login_form" class="space-y-5" method="POST" action="{{ url_for('auth.login') }}">
             {{ login_form.hidden_tag() }} <!-- CSRF protection token -->
 
-            <!--flasing messages for validation result-->
+            <!--flasing messages-->
             <div class="mb-4">
             {% with flash_message = get_flashed_messages(with_categories=true)[-1] %}
                 {% if flash_message %}
@@ -44,6 +44,14 @@
                         <p class="text-red-400 text-sm">{{ message }}</p>
                     {% elif category == "signup_success" %}
                         <p class="text-green-400 text-sm">{{ message}}</p>
+                    {% elif category == "verification_success" %}
+                        <p class="text-green-400 text-sm">{{ message }}</p>
+                    {% elif category == "reset_required" %}
+                        <p class="text-green-400 text-sm">{{ message }}</p>
+                    {% elif category == "reset_fail" %}
+                        <p class="text-green-400 text-sm">{{ message }}</p>
+                    {% elif category == "reset_success" %}
+                        <p class="text-green-400 text-sm">{{ message }}</p>
                     {% endif %}
                 {% endif %}
             {% endwith %}
@@ -80,7 +88,8 @@
                 {% endfor %}
             </div>
 
-            <a href="{{ url_for('auth.forgot_password') }}" class="block text-[var(--primary)] mb-2">
+            <a href="{{ url_for('auth.forgot_password') }}" 
+                class="text-[var(--secondary)] hover:text-[var(--primary)] underline underline-offset-2 transition">
                 Forgot password?
             </a>
             
@@ -96,7 +105,7 @@
         <form id="signup_form" class="space-y-5" method="POST" action="{{ url_for('auth.signup') }}">
             {{ signup_form.hidden_tag() }} <!-- CSRF protection token -->
             
-            <!--flasing messages for validation result-->
+            <!--flasing messages-->
             <div class="mb-4">
             {% with flash_message = get_flashed_messages(with_categories=true)[-1] %}
                 {% if flash_message %}
@@ -160,7 +169,7 @@
             </div>
 
             <div>
-            {{ signup_password_form.submit(
+            {{ signup_form.submit(
                     class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
                 ) 
             }}
@@ -191,10 +200,13 @@
                     required=True
                     )
                 }}
+                {% for error in reset_request_form.email.errors %}
+                    <p class="text-red-400 text-sm">{{ error }}</p>
+                {% endfor %}
             </div>
 
             <div>
-            {{ reset_password_form.submit(
+            {{ reset_request_form.submit(
                     class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
                 ) 
             }}
@@ -207,6 +219,18 @@
         <form id="reset_password_form" class="space-y-5" method="POST" action="{{ url_for('auth.reset_password', token=token) }}">
             {{ reset_password_form.hidden_tag() }}
 
+            <!--flasing messages-->
+            <div class="mb-4">
+            {% with flash_message = get_flashed_messages(with_categories=true)[-1] %}
+                {% if flash_message %}
+                    {% set category, message = flash_message %}
+                    {% if category == "reset_fail" %}
+                        <p class="text-red-400 text-sm">{{ message }}</p>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+            </div>
+
             <div>
                 <label class="block text-[var(--primary)] mb-2">New Password (minimum 6 characters)</label>
                 {{ reset_password_form.password(
@@ -216,6 +240,10 @@
                     required=True
                     )
                 }}
+
+                {% for error in reset_password_form.password.errors %}
+                    <p class="text-red-400 text-sm">{{ error }}</p>
+                {% endfor %}
             </div>
 
             <div>
@@ -226,6 +254,10 @@
                     required=True
                     )
                 }}
+
+                 {% for error in reset_password_form.confirm_password.errors %}
+                    <p class="text-red-400 text-sm">{{ error }}</p>
+                {% endfor %}
             </div>
 
             <div>

@@ -188,7 +188,7 @@ def forgot_password():
             send_email(account.email, "Password Reset Request", body)
 
         flash(
-            "If the email exists, a reset link has been sent.",
+            "If the email exists, a password reset link has been sent.",
             "reset_required"
         )
 
@@ -202,14 +202,14 @@ def reset_password(token):
     email = confirm_token(token, "password-reset", max_age= 60 * 60)
 
     if email is None:
-        flash("Invalid or expired reset link.", "danger")
+        flash("Invalid or expired reset link.", "reset_fail")
 
         return redirect(url_for("auth.auth_page", mode="forgot-password"))
 
     account = Account.query.filter_by(email=email).first()
 
     if account is None:
-        flash("Account not found.", "danger")
+        flash("Account not found.", "reset_fail")
 
         return redirect(url_for("auth.auth_page"))
 
