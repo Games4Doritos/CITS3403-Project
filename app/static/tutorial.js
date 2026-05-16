@@ -1,148 +1,155 @@
 /*
   tutorial.js
   Mini interactive demo for the landing page.
-  Mirrors the actual game - fixed player position, jump to avoid obstacles.
-  No score, no game over - just feel the controls.
+  Directly adapted from game.js - same physics and obstacle logic.
+  No score, no game over, no pause - just feel the controls.
 */
 
 const tutorialCanvas = document.getElementById('tutorialCanvas');
+const tutorialPlayerCanvas = document.getElementById('tutorialPlayerCanvas');
 const tutorialCtx = tutorialCanvas.getContext('2d');
+const tutorialPlayerCtx = tutorialPlayerCanvas.getContext('2d');
 
 tutorialCanvas.width = tutorialCanvas.clientWidth;
 tutorialCanvas.height = tutorialCanvas.clientHeight;
+tutorialPlayerCanvas.width = tutorialPlayerCanvas.clientWidth;
+tutorialPlayerCanvas.height = tutorialPlayerCanvas.clientHeight;
 
-let bonusMultiplier = 0;
-
-class TutorialPlayer {
+class player {
+    x;
+    y;
+    sprite;
+    jumpMemory;
+    lastTime;
+    jumpCount;
     constructor(){
-        this.x = tutorialCanvas.width * 0.1;
-        this.y = tutorialCanvas.height * 0.65 - 60;
+        this.x = tutorialPlayerCanvas.width * 0.1;
+        this.y = tutorialPlayerCanvas.height / 2;
         this.sprite = new Image();
         this.sprite.src = "/static/assets/technoChicken.png";
         this.jumpMemory = -1;
+        this.lastTime = performance.now();
         this.jumpCount = 0;
     }
     draw(context){
         context.drawImage(this.sprite, this.x, this.y, 40, 60);
     }
     update(context){
-        // Jump physics (exact same as main game)
         if (this.jumpMemory > -1){
             this.y -= (this.jumpMemory - 13);
             this.jumpMemory--;
         }
-        else{
-            bonusMultiplier = 0;
-        }
-
-        // Keep player above ground
-        const groundY = tutorialCanvas.height * 0.65 - 60;
-        if (this.y > groundY){
-            this.y = groundY;
-            this.jumpMemory = -1;
-        }
-
         this.draw(context);
     }
     jump(){
         if (this.jumpMemory == -1){
-            bonusMultiplier = 0.5;
             this.jumpCount++;
             this.jumpMemory = 26;
         }
     }
 }
 
-class TutorialObstacle {
-    constructor(yState){
+class obstacle {
+    y;
+    x;
+    sprite;
+    alive;
+    lastTime;
+    static {
+        // Slower than main game for easier tutorial
+        this.speed = 1/256;
+        this.spacing = 300;
+    }
+    constructor(type, yState){
+        if (yState === "sky"){
+            this.y = tutorialCanvas.height/2 - 100;
+        }
+        else if (yState === "ground"){
+            this.y = tutorialCanvas.height/2;
+        }
         this.x = tutorialCanvas.width + 50;
         this.sprite = new Image();
-        this.sprite.src = "/static/assets/random.png";
+        this.sprite.src = `/static/assets/${type}.png`;
         this.alive = true;
         this.lastTime = performance.now();
-
-        if (yState === "sky"){
-            this.y = tutorialCanvas.height * 0.65 - 110;
-        } else {
-            this.y = tutorialCanvas.height * 0.65 - 50;
-        }
     }
     draw(context){
         context.drawImage(this.sprite, this.x, this.y, 50, 50);
     }
     update(context){
-        const now = performance.now();
-        const deltaTime = (now - this.lastTime) * 0.06;
-        this.lastTime = now;
-
-        // Slower speed than main game so it's easier for tutorial
-        this.x -= (tutorialCanvas.width + 100) * 0.004 * deltaTime;
-
         if (this.x < -50){
             this.alive = false;
         }
-
+        const now = performance.now();
+        const deltaTime = (now - this.lastTime) * 0.06;
+        this.lastTime = now;
+        this.x -= (tutorialCanvas.width + 100) * obstacle.speed * deltaTime;
         this.draw(context);
     }
 }
 
-// Input handling
-document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space'){
-        tutorialPlayer.jump();
-        e.preventDefault();
-    }
-});
-
-const tutorialPlayer = new TutorialPlayer();
-let tutorialObstacles = [];
-let lastObstacleTime = performance.now();
-
-function drawGround(){
-    const groundY = tutorialCanvas.height * 0.65;
-    tutorialCtx.shadowColor = '#8E4DE4';
-    tutorialCtx.shadowBlur = 15;
-    tutorialCtx.fillStyle = '#5D05EA';
-    tutorialCtx.fillRect(0, groundY, tutorialCanvas.width, 10);
-    tutorialCtx.shadowBlur = 0;
-}
+const tutorialPlayer = new player();
+let objCount = 0;
+const obstacles = [];
+let tutorialAnimationID;
 
 function drawControls(){
     tutorialCtx.font = 'bold 16px Arial';
     tutorialCtx.fillStyle = 'rgba(142, 77, 228, 0.8)';
     tutorialCtx.textAlign = 'center';
-    tutorialCtx.fillText('SPACE to jump', tutorialCanvas.width * 0.5, tutorialCanvas.height * 0.65 + 40);
-}
-
-function spawnObstacle(){
-    const now = performance.now();
-    // Spawn a new obstacle every 3 seconds
-    if (now - lastObstacleTime > 3000){
-        const yState = Math.random() < 0.5 ? "ground" : "sky";
-        tutorialObstacles.push(new TutorialObstacle(yState));
-        lastObstacleTime = now;
-    }
+    tutorialCtx.fillText('SPACE to jump', tutorialCanvas.width * 0.5, tutorialCanvas.height * 0.85);
 }
 
 function tutorialFrame(){
     tutorialCanvas.width = tutorialCanvas.clientWidth;
     tutorialCanvas.height = tutorialCanvas.clientHeight;
+    tutorialPlayerCanvas.width = tutorialPlayerCanvas.clientWidth;
+    tutorialPlayerCanvas.height = tutorialPlayerCanvas.clientHeight;
 
+    // Clear both canvases
     tutorialCtx.clearRect(0, 0, tutorialCanvas.width, tutorialCanvas.height);
+    tutorialPlayerCtx.clearRect(0, 0, tutorialPlayerCanvas.width, tutorialPlayerCanvas.height);
 
-    drawGround();
+    // Obstacle management (same logic as game.js)
+    let count = 0;
+    obstacles.forEach(obs => {
+        if (!obs.alive) count++;
+    });
+    for (let i = 0; i < count; i++){
+        obstacles.shift();
+        objCount--;
+    }
+    if (objCount === 0){
+        if (Math.random() < 0.5){
+            obstacles.push(new obstacle("random", "ground"));
+        } else {
+            obstacles.push(new obstacle("random", "sky"));
+        }
+        objCount++;
+    }
+    else if (objCount < 5 && Math.random() < 0.1 && obstacles[obstacles.length-1].x < tutorialCanvas.width - obstacle.spacing){
+        if (Math.random() < 0.5){
+            obstacles.push(new obstacle("random", "ground"));
+        } else {
+            obstacles.push(new obstacle("random", "sky"));
+        }
+        objCount++;
+    }
 
-    // Spawn and update obstacles
-    spawnObstacle();
-    tutorialObstacles = tutorialObstacles.filter(obs => obs.alive);
-    tutorialObstacles.forEach(obs => obs.update(tutorialCtx));
+    // Update obstacles and player
+    obstacles.forEach(obs => obs.update(tutorialCtx));
+    tutorialPlayer.update(tutorialPlayerCtx);
 
-    // Update player
-    tutorialPlayer.update(tutorialCtx);
-
+    // Draw controls hint
     drawControls();
 
-    requestAnimationFrame(tutorialFrame);
+    tutorialAnimationID = requestAnimationFrame(tutorialFrame);
 }
 
-tutorialFrame();
+window.addEventListener('keypress', (event) => {
+    if (event.code === 'Space'){
+        tutorialPlayer.jump();
+    }
+});
+
+tutorialAnimationID = requestAnimationFrame(tutorialFrame);
