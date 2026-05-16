@@ -17,7 +17,7 @@
             Continue your game and view your scores
         </p>
 
-        <div class="relative flex mb-6 border-b">
+        <div id="auth_tabs" class="relative flex mb-6 border-b">
             <button id="login_btn" class="w-1/2 py-2 font-semibold">
                 Log In
             </button>
@@ -30,11 +30,12 @@
             </div>
         </div>
 
+        {% if mode != "resend-verification" and mode != "forgot-password" and mode != "reset-password" %}
         <!--Login Form-->
-        <form id="login_form" class="space-y-5" method="POST">
+        <form id="login_form" class="space-y-5" method="POST" action="{{ url_for('auth.login') }}">
             {{ login_form.hidden_tag() }} <!-- CSRF protection token -->
 
-            <!--flasing messages for validation result-->
+            <!--flasing messages-->
             <div class="mb-4">
             {% with flash_message = get_flashed_messages(with_categories=true)[-1] %}
                 {% if flash_message %}
@@ -43,6 +44,14 @@
                         <p class="text-red-400 text-sm">{{ message }}</p>
                     {% elif category == "signup_success" %}
                         <p class="text-green-400 text-sm">{{ message}}</p>
+                    {% elif category == "verification_success" %}
+                        <p class="text-green-400 text-sm">{{ message }}</p>
+                    {% elif category == "reset_required" %}
+                        <p class="text-green-400 text-sm">{{ message }}</p>
+                    {% elif category == "reset_fail" %}
+                        <p class="text-green-400 text-sm">{{ message }}</p>
+                    {% elif category == "reset_success" %}
+                        <p class="text-green-400 text-sm">{{ message }}</p>
                     {% endif %}
                 {% endif %}
             {% endwith %}
@@ -78,26 +87,36 @@
                     </p>
                 {% endfor %}
             </div>
+
+            <a href="{{ url_for('auth.forgot_password') }}" 
+                class="text-[var(--secondary)] hover:text-[var(--primary)] underline underline-offset-2 transition">
+                Forgot password?
+            </a>
             
-            <button class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
-                type="submit" 
-                name="form_type" 
-                value="login">Log In
-            </button> 
+            <div>
+            {{ login_form.submit(
+                    class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                ) 
+            }}
+            </div>
         </form>              
 
         <!--Sign Up Form-->
-        <form id="signup_form" class="space-y-5" method="POST">
+        <form id="signup_form" class="space-y-5" method="POST" action="{{ url_for('auth.signup') }}">
             {{ signup_form.hidden_tag() }} <!-- CSRF protection token -->
             
-            <!--flasing messages for validation result-->
+            <!--flasing messages-->
             <div class="mb-4">
             {% with flash_message = get_flashed_messages(with_categories=true)[-1] %}
                 {% if flash_message %}
                     {% set category, message = flash_message %}
                     {% if category == "signup_error" %}
                         <p class="text-red-400 text-sm">{{ message }}</p>
-                    {% elif category == "signup_success" %}
+                    {% elif category == "verification_required" %}
+                        <p class="text-green-400 text-sm">{{ message}}</p>
+                    {% elif category == "verification_fail" %}
+                        <p class="text-green-400 text-sm">{{ message}}</p>
+                    {% elif category == "verification_success" %}
                         <p class="text-green-400 text-sm">{{ message}}</p>
                     {% endif %}
                 {% endif %}
@@ -149,13 +168,107 @@
                 {% endfor %}
             </div>
 
-            <button class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
-                type="submit" 
-                name="form_type" 
-                value="signup">Sign Up
-            </button> 
+            <div>
+            {{ signup_form.submit(
+                    class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                ) 
+            }}
+            </div>
         </form>
-    
+        {% endif %}
+
+        <!--Resend_verification_form-->
+        {% if mode == "resend-verification" %}
+        <form id="resend_verification_form" class="space-y-5" method="POST" action="{{ url_for('auth.resend_verification') }}">
+            <button class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                type="submit">
+                Resend verification email
+            </button>
+        </form>
+        {% endif %}
+
+        <!--Forgot password form-->
+        <form id="forgot_password_form" class="space-y-5" method="POST" action="{{ url_for('auth.forgot_password') }}">
+            {{ reset_request_form.hidden_tag() }}
+
+            <div>
+            <label class="block text-[var(--primary)] mb-2">Email</label>
+                {{ reset_request_form.email(
+                    class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]",
+                    type="email",
+                    placeholder="example@mail.com",
+                    required=True
+                    )
+                }}
+                {% for error in reset_request_form.email.errors %}
+                    <p class="text-red-400 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+            {{ reset_request_form.submit(
+                    class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                ) 
+            }}
+            </div>
+
+        </form>
+
+        <!--Reset password form-->
+        {% if mode == "reset-password" and token %}
+        <form id="reset_password_form" class="space-y-5" method="POST" action="{{ url_for('auth.reset_password', token=token) }}">
+            {{ reset_password_form.hidden_tag() }}
+
+            <!--flasing messages-->
+            <div class="mb-4">
+            {% with flash_message = get_flashed_messages(with_categories=true)[-1] %}
+                {% if flash_message %}
+                    {% set category, message = flash_message %}
+                    {% if category == "reset_fail" %}
+                        <p class="text-red-400 text-sm">{{ message }}</p>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
+            </div>
+
+            <div>
+                <label class="block text-[var(--primary)] mb-2">New Password (minimum 6 characters)</label>
+                {{ reset_password_form.password(
+                    class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]",
+                    placeholder="Create your new password",
+                    minlength=6,
+                    required=True
+                    )
+                }}
+
+                {% for error in reset_password_form.password.errors %}
+                    <p class="text-red-400 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+                <label class="block text-[var(--primary)] mb-2">Confirm Password</label>
+                {{ reset_password_form.confirm_password(
+                    class="w-full rounded-2xl border border-[var(--primary)] bg-transparent px-4 py-3 text-white placeholder-gray-400 outline-none focus:shadow-[0_0_0.8rem_var(--secondary)]",
+                    placeholder="Confirm your new password",
+                    required=True
+                    )
+                }}
+
+                 {% for error in reset_password_form.confirm_password.errors %}
+                    <p class="text-red-400 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div>
+            {{ reset_password_form.submit(
+                class="w-full p-4 bg-[var(--primary)] hover:scale-105 rounded-2xl text-lg text-white shadow-[0_0_1rem_var(--secondary)] transition"
+                ) 
+            }}
+            </div>
+        </form>
+        {% endif %}
+
     </div>
 </section>
 

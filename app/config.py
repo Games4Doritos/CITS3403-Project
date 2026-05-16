@@ -1,5 +1,9 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Get the absolute path of the folder where this config.py file is located
 # (To build file path reliably)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -14,6 +18,14 @@ class Config:
     # enable CSRF protection for forms
     WTF_CSRF_ENABLED = True
 
+    # Gmail SMTP server with TLS encryption
+    MAIL_SERVER = os.environ.get("MAIL_SERVER")
+    MAIL_PORT = int(os.environ.get("MAIL_PORT"))
+    MAIL_USE_TLS = True
+    MAIL_USE_SSL = False
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_USERNAME")
 
 class DeploymentConfig(Config):
     # Use database URL from environment if needed later

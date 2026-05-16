@@ -11,6 +11,8 @@ class Account(UserMixin, db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     friend_code = db.Column(db.String(8), nullable=False)
 
+    is_email_verified = db.Column(db.Boolean, default=False, nullable=False)
+
     # one-to-one relationship with Profile
     profile = db.relationship('Profile', backref='account', uselist=False, cascade='all, delete-orphan')
     # one-to-one relationship with BestStats

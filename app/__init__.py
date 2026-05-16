@@ -1,10 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_mail import Mail
 
 # Create extension objects
 db = SQLAlchemy()
 login = LoginManager()
+mail = Mail()
 
 # Redirect unauthenticated users to auth page
 login.login_view = 'auth.login_signup'
@@ -17,6 +19,7 @@ def create_app(config):
     # Attach extensions to this app instance
     db.init_app(app)
     login.init_app(app)
+    mail.init_app(app)
 
     # register blueprints
     from app.routes import main, auth, user, game, leaderboard
