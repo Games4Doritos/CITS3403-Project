@@ -1,13 +1,23 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
 from flask_login import login_user, logout_user, login_required
+from flask_mail import Message
 
-from app import db
+from app import db, mail
 from app.forms import LoginForm, SignupForm, RequestResetForm, ResetPasswordForm
 from app.models import Account
 from app.tokens import generate_token, confirm_token
-from app.email import send_email
 
 auth = Blueprint("auth", __name__)
+
+def send_email(to, subject, body):
+    message = Message(
+        subject=subject, 
+        recipients=[to],
+        body=body,
+        sender=current_app.config["MAIL_USERNAME"]
+    )
+    mail.send(message)
+
 
 @auth.route("/auth")
 def auth_page():
