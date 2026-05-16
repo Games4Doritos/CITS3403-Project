@@ -7,30 +7,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {% endblock %}
 
-{% block content %}s
-    <div class="items-center flex justify-center h-screen">
-        <div class="shadow-[0_0_2rem_var(--secondary)] rounded-3xl h-[500px] w-[900px] shrink-0">
+{% block content %}
+    <div class="items-center flex justify-center h-screen overflow-hidden">
+        <section class="shadow-[0_0_2rem_var(--secondary)] rounded-3xl h-[320px] w-[640px] shrink-0 rotate-90 sm:rotate-0" id="gameDisplay">
             <!--End Run Screen-->
-            <div class="absolute w-[900px] h-[500px] hidden items-center justify-center z-10 backdrop-brightness-[80%] rounded-3xl" id="end">
-                <div>
-                    <h1 class="text-5xl text-[var(--primary)] py-5">
-                        Run ended!
+            <div class="absolute h-[320px] w-[640px] hidden items-center justify-center z-10 backdrop-brightness-[80%] rounded-3xl" id="end">
+                <div class="rounded-2xl border px-10 py-5 bg-[var(--background)] border-[var(--primary)]">
+                    <h1 class="text-5xl text-[var(--primary)] mb-2.5 pb-2.5 border-b border-[var(--primary)]" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
+                        Run Ended!
                     </h1>
-                    <h2 class="text-2xl text-[var(--primary)]">
-                        Your Stats:
-                    </h2>
-                    <h3 class="text-xl hidden"  id="finalTime">
-                        Final Time: 0 seconds
-                    </h3>
-                    <h3 class="text-xl hidden" id="totalJumps">
-                        Total Jumps: 0
-                    </h3>
-                    <h3 class="text-xl hidden" id="totalScore">
-                        Total Score: 0
-                    </h3>
-                    <h3 class="text-xl hidden" id="newCurrency">
-                        Currency: 
-                        <div class="inline-block w-32 border px-1 border-[var(--primary)] backdrop-brightness-110">
+                    <div class="text-[var(--secondary)]">
+                        <h3 class="text-xl hidden pb-1" id="finalTime">
+                            Final Time: 
+                            <span class="text-white">
+                                0 seconds
+                            </span>
+                        </h3>
+                        <h3 class="text-xl hidden pb-1" id="totalJumps">
+                            Total Jumps: 
+                            <span class="text-white" >
+                                0
+                            </span>
+                        </h3>
+                        <h3 class="text-xl hidden pb-1" id="totalScore">
+                            Total Score: 
+                            <span class="text-white">
+                                0
+                            </span>
+                        </h3>
+                    </div>
+                    <h3 class="text-xl hidden text-[var(--secondary)] pb-1" id="newCurrency">
+                        Gems 
+                        <div class="inline-block w-32 border px-1 border-[var(--primary)] backdrop-brightness-110 text-white">
                             00
                         </div>
                     </h3>
@@ -41,32 +49,68 @@
                         Run Successfully Submitted!
                     </h3>
                 </div>
-
             </div>
+            <div class="absolute w-full h-full rounded-3xl z-10 items-center justify-center flex" id="startScreen">
+                <button onclick="initialAnim()">
+                    <h2 class="text-2xl text-[var(--primary)] hover:scale-105 transition">
+                        Start Run
+                    </h2>
+                </button>
+            </div>
+            <!-- The two canvases that display the game, one for just the player and one for the rest of the game-->
+            <canvas id="gameCanvas" class="absolute" height="320" width="640"></canvas>
+            <canvas id="playerCanvas" class="absolute" height="320" width="640"></canvas>
             <!-- UI for the game(score, multiplier, pause button)-->
-            <div class="relative w-full">
-                <div class="absolute p-4 text-2xl text-[var(--primary)]" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
-                    <h2 class="block pb-1">
-                        Score <span id="score">000011</span>
-                    </h2>
-                    <div class="border border-[var(--primary)]">
+            <div class="w-full h-full z-10 hidden" id="gameUI">
+                <div class="flex">
+                    <div class="p-4 text-2xl text-[var(--primary)] w-fit inline-block" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
+                        <h2 class="block pb-1">
+                            Score <span id="score">0</span>
+                        </h2>
+                        <div class="border border-[var(--primary)]">
+                        </div>
+                        <h2 class="block">
+                            x<span id="multiplier">1</span>
+                        </h2>
                     </div>
-                    <h2 class="block">
-                        x<span id="multiplier">1</span>
-                    </h2>
-                </div>
-                <div class="relative ml-[92.5%]">
-                    <div class="absolute p-2 rounded-xl m-2 z-10 text-[var(--primary)] text-xl" id="pauseButton">
+                    <div class="p-2 rounded-xl m-2 z-10 text-[var(--primary)] text-xl ml-auto w-fit hover:scale-110 transition" id="pauseButton">
                         <button onclick="pauseButton()">
                             <i class="fa fa-pause" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
-                
+                <div class="hidden justify-center w-full h-fit z-10" id="pauseScreen">
+                    <div class="items-center text-center border rounded-xl py-6 px-10 border-[var(--primary)] backdrop-brightness-[80%] bg-[var(--background)]">
+                        <h2 class="text-2xl text-[var(--primary)] pb-5">
+                            Run Paused
+                        </h2>
+                        <button onclick="pauseButton()">
+                            <div class="p-2 rounded-xl border border-[var(--primary)] bg-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)] z-11 hover:scale-105 transition ">
+                                Continue
+                            </div> 
+                        </button>
+                    </div>
+                </div>
             </div>
-            <!-- The two canvases that display the game, one for just the player and one for the rest of the game-->
-            <canvas id="gameCanvas" class="absolute" height="500" width="900"></canvas>
-            <canvas id="playerCanvas" class="absolute" height="500" width="900"></canvas>
-        </div>
+            
+        </section>
+        <section class="absolute mt-[30rem] flex justify-center text-[var(--primary)]">
+             <div class="text-xl">
+                <div class="inline-block rounded-xl border border-[var(--primary)] p-1.5 w-[10rem] text-center mb-1 text-[medium]">
+                    Space
+                </div>
+                <span class="mx-2">
+                    or
+                </span>
+                <i class="fa fa-mouse-pointer"></i>
+                <div class="inline-block mx-2 ">
+                    &LongRightArrow;
+                </div>
+                <span>
+                    Jump
+                </span>
+             </div>
+        </section>
+                        
     </div>
 {% endblock %}

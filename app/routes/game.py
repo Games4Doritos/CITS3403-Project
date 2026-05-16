@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request
-from flask_login import current_user
+from flask_login import current_user, login_required
 from json import loads
 
 from app import db
@@ -8,6 +8,7 @@ from app.models import BestStats
 game = Blueprint("game", __name__)
 
 @game.route('/play', methods=["GET", "POST"])
+@login_required
 def play():
     
     def validateResults(requestData):

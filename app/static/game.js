@@ -20,10 +20,43 @@ class player{
         this.y = playerCanvas.height/2;
         this.sprite = new Image();
         this.sprite.src = "/static/assets/technoChicken.png";
-        //Dimensions of sprite: 60x40
+        //Dimensions of sprite: 40x60
         this.jumpMemory = -1;
         this.lastTime = performance.now();
         this.jumpCount = 0;
+        this.sprite.onload = () => {
+            playerCtx.drawImage(this.sprite,this.x - 40,this.y,40,60)
+        }
+    }
+    initialAnim(context){
+        let startX = this.x - 40;
+        let x = startX;
+        let runStart = performance.now();
+        let lastTime = runStart;
+        let animID;
+
+        const initialFrame = () => {
+            
+            const now = performance.now();
+        
+            if (now-runStart >= 500){
+                cancelAnimationFrame(animID);
+                start();
+                return;
+            }
+            lastTime = now;
+            const t = now-runStart;
+
+            //x = startX + (t < 250 ? t * t * 0.000192: (t) * (t) * 0.000192);
+            x = startX + t * 0.001 * 80
+            playerCtx.clearRect(0, 0, playerCanvas.width, playerCanvas.height);
+            playerCtx.drawImage(this.sprite,x,this.y,40,60);
+            
+            animID = requestAnimationFrame(initialFrame);
+
+        }
+        animID = requestAnimationFrame(initialFrame);
+        
     }
     draw(context){
         context.drawImage(this.sprite,this.x,this.y,40,60);
@@ -103,13 +136,15 @@ const obstacles = [];
 let animationID;
 let running = true;
 
-let runStart = performance.now();
-let lastTime = runStart;
+let runStart;
+let lastTime;
 let pausedTime = 0.00;
 let finalRunDuration;
 
 let dead = false;
+const gameUI = document.getElementById("gameUI");
 const end = document.getElementById("end");
+const pauseScreen = document.getElementById("pauseScreen")
 
 let score = 0;
 let baseMultiplier = 1;
@@ -121,6 +156,8 @@ function frame(){
     let count = 0;
     gameCanvas.width = gameCanvas.clientWidth;
     gameCanvas.height = gameCanvas.clientHeight;
+    playerCanvas.width = playerCanvas.clientWidth;
+    playerCanvas.height = playerCanvas.clientHeight;
 
     obstacles.forEach(obs =>{
         if (!obs.alive){
@@ -192,7 +229,6 @@ function frame(){
     }
     curPlayer.update(playerCtx);
     obstacles.forEach(obs =>{
-        
         obs.update(gameCtx);
     });
     
@@ -273,9 +309,9 @@ async function runEnd(){
     const totalScore = document.getElementById("totalScore");
     const newCurrency = document.getElementById("newCurrency");
     //set final stats in appropriate elements
-    finalTime.textContent = `Final Time: ${finalRunSeconds} Seconds`;
-    totalJumps.textContent = `Total Jumps: ${curPlayer.jumpCount}`;
-    totalScore.textContent = `Total Score: ${roundedScore}`;
+    finalTime.firstElementChild.textContent = `${finalRunSeconds} Seconds`;
+    totalJumps.firstElementChild.textContent = `${curPlayer.jumpCount}`;
+    totalScore.firstElementChild.textContent = `${roundedScore}`;
     newCurrency.firstElementChild.textContent = `${currency}`;
     
     //small animation
@@ -301,6 +337,7 @@ function pauseButton(){
         lastTime = performance.now();
         cancelAnimationFrame(animationID);
         running = false;
+        pauseScreen.style.display = "flex";
     }
     else {
         curPlayer.lastTime = performance.now();
@@ -311,13 +348,40 @@ function pauseButton(){
         lastTime = performance.now();
         animationID = requestAnimationFrame(frame);
         running = true;
+        pauseScreen.style.display = "none";
     }
 }
 
-animationID = requestAnimationFrame(frame);
-window.addEventListener('keypress', (event) => {
-    if (event.code === 'Space') {
+function initialAnim(){
+    document.getElementById("startScreen").style.display = "none";
+    gameUI.style.display = "block";
+    runStart = performance.now();
+    lastTime = runStart;
+    curPlayer.initialAnim(playerCtx);
+    
+}
+
+function jumpHandle(event){
+    if ((event.type === 'mousedown' || event.key === ' ' || event.key === 'Spacebar') && running){
         curPlayer.jump();
     }
 
-});
+}
+
+function start(){
+    animationID = requestAnimationFrame(frame);
+    document.addEventListener('keydown', (event) => {
+        jumpHandle(event);
+    });
+    playerCanvas.addEventListener('mousedown', (event) => {
+        jumpHandle(event);
+    });
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden'){
+            if (running){
+                pauseButton();
+            }
+        }
+    });
+}
+
