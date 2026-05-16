@@ -9,7 +9,7 @@ login = LoginManager()
 mail = Mail()
 
 # Redirect unauthenticated users to auth page
-login.login_view = 'auth.login_signup'
+login.login_view = "auth.auth_page"
 
 
 def create_app(config):
