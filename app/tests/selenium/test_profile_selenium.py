@@ -182,6 +182,10 @@ class ProfileSeleniumTests(TestCase):
 
         # Submit edit profile form
         self.driver.find_element(By.XPATH, "//button[contains(text(), 'Save Changes')]").click()
+        # Wait until updated username appears on the page
+        WebDriverWait(self.driver, 10).until(
+            EC.text_to_be_present_in_element((By.TAG_NAME, "body"), "UpdatedUser")
+        )
 
         # Verify updated username appears
         self.assertIn(
