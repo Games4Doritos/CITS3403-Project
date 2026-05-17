@@ -409,6 +409,7 @@ function pauseButton(){
 }
 
 function initialAnim(){
+    multiplierElement.textContent = `${1 - sabotageDebuff + dailyFriendBonus}`;
     document.getElementById("startScreen").style.display = "none";
     gameUI.style.display = "block";
     curPlayer.initialAnim(playerCtx);

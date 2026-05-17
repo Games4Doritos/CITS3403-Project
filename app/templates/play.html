@@ -17,12 +17,12 @@
         <section class="shadow-[0_0_2rem_var(--secondary)] rounded-3xl h-[320px] w-[640px] shrink-0 rotate-90 sm:rotate-0" id="gameDisplay">
             <div class="absolute flex items-center flex-wrap justify-center gap-4 -top-32 w-full">
                 <!-- Sabotage warning -->
-                <div id="sabotageWarning" {% if debuff == 0 %}style="display:block"{% endif %}
+                <div id="sabotageWarning" {% if debuff == 0 %}style="display:none"{% endif %}
                     class=" z-20 px-4 py-2 rounded-xl border border-red-500/50 bg-red-500/10 text-red-400 text-sm text-center">
                         <i class="fa fa-bolt"></i> You have been sabotaged! -{{ debuff }}x multiplier this run
                 </div>
                 <!-- Friend Bonus Notice-->
-                <div {% if friendBonus == 0 %}style="display:block"{% endif %}
+                <div {% if friendBonus == 0 %}style="display:none"{% endif %}
                     class="z-20 px-4 py-2 rounded-xl border border-[var(--secondary)] backdrop-brightness-[150%] text-[var(--secondary)] text-sm text-center">
                         <i class="fa fa-user"></i> A friend has given you your daily bonus! +{{ friendBonus }}x multiplier this run
                 </div>
