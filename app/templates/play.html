@@ -3,34 +3,51 @@
 {% block title %}Technoanimal Runner - Play{% endblock %}
 
 {% block extra_head %}
+    <script>
+    // Injected by Flask - debuff value for this run
+        let sabotageDebuff = {{ debuff }};
+    </script>
     <script src="{{ url_for('static', filename='game.js')}}" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {% endblock %}
 
-{% block content %}s
-    <div class="items-center flex justify-center h-screen">
-        <div class="shadow-[0_0_2rem_var(--secondary)] rounded-3xl h-[500px] w-[900px] shrink-0">
+{% block content %}
+    <div class="items-center flex justify-center h-screen overflow-hidden">
+        <section class="shadow-[0_0_2rem_var(--secondary)] rounded-3xl h-[320px] w-[640px] shrink-0 rotate-90 sm:rotate-0" id="gameDisplay">
+            <!-- Sabotage warning -->
+            <div id="sabotageWarning" {% if debuff == 0 %}style="display:none"{% endif %}
+                class="absolute top-16 left-1/2 transform -translate-x-1/2 z-20 px-4 py-2 rounded-xl border border-red-500/50 bg-red-500/10 text-red-400 text-sm">
+                    <i class="fa fa-bolt"></i> You have been sabotaged! -{{ debuff }}x multiplier this run
+            </div>
             <!--End Run Screen-->
-            <div class="absolute w-[900px] h-[500px] hidden items-center justify-center z-10 backdrop-brightness-[80%] rounded-3xl" id="end">
-                <div>
-                    <h1 class="text-5xl text-[var(--primary)] py-5">
-                        Run ended!
+            <div class="absolute h-[320px] w-[640px] hidden items-center justify-center z-10 backdrop-brightness-[80%] rounded-3xl" id="end">
+                <div class="rounded-2xl border px-10 pt-5 pb-2 bg-[var(--background)] border-[var(--primary)]">
+                    <h1 class="text-5xl text-[var(--primary)] mb-2.5 pb-2.5 border-b border-[var(--primary)]" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
+                        Run Ended!
                     </h1>
-                    <h2 class="text-2xl text-[var(--primary)]">
-                        Your Stats:
-                    </h2>
-                    <h3 class="text-xl hidden"  id="finalTime">
-                        Final Time: 0 seconds
-                    </h3>
-                    <h3 class="text-xl hidden" id="totalJumps">
-                        Total Jumps: 0
-                    </h3>
-                    <h3 class="text-xl hidden" id="totalScore">
-                        Total Score: 0
-                    </h3>
-                    <h3 class="text-xl hidden" id="newCurrency">
-                        Currency: 
-                        <div class="inline-block w-32 border px-1 border-[var(--primary)] backdrop-brightness-110">
+                    <div class="text-[var(--secondary)]">
+                        <h3 class="text-xl hidden pb-1" id="finalTime">
+                            Final Time: 
+                            <span class="text-white">
+                                0 seconds
+                            </span>
+                        </h3>
+                        <h3 class="text-xl hidden pb-1" id="totalJumps">
+                            Total Jumps: 
+                            <span class="text-white" >
+                                0
+                            </span>
+                        </h3>
+                        <h3 class="text-xl hidden pb-1" id="totalScore">
+                            Total Score: 
+                            <span class="text-white">
+                                0
+                            </span>
+                        </h3>
+                    </div>
+                    <h3 class="text-xl hidden text-[var(--secondary)] pb-1" id="newCurrency">
+                        Gems 
+                        <div class="inline-block w-32 border px-1 border-[var(--primary)] backdrop-brightness-110 text-white">
                             00
                         </div>
                     </h3>
@@ -40,33 +57,80 @@
                     <h3 class="text-lg hidden text-[var(--primary)]" id="successMessage">
                         Run Successfully Submitted!
                     </h3>
-                </div>
-
-            </div>
-            <!-- UI for the game(score, multiplier, pause button)-->
-            <div class="relative w-full">
-                <div class="absolute p-4 text-2xl text-[var(--primary)]" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
-                    <h2 class="block pb-1">
-                        Score <span id="score">000011</span>
-                    </h2>
-                    <div class="border border-[var(--primary)]">
-                    </div>
-                    <h2 class="block">
-                        x<span id="multiplier">1</span>
-                    </h2>
-                </div>
-                <div class="relative ml-[92.5%]">
-                    <div class="absolute p-2 rounded-xl m-2 z-10 text-[var(--primary)] text-xl" id="pauseButton">
-                        <button onclick="pauseButton()">
-                            <i class="fa fa-pause" aria-hidden="true"></i>
+                    <div class="hidden" id="retry">
+                        <button onclick="restart()">
+                            <div class="mt-1 p-2 rounded-xl bg-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)] text-white hover:scale-105 transition">
+                                Play Again
+                            </div>
                         </button>
                     </div>
                 </div>
                 
             </div>
+            <div class="absolute w-full h-full rounded-3xl z-10 items-center justify-center flex" id="startScreen">
+                <button onclick="initialAnim()">
+                    <h2 class="mt-8 text-2xl text-[var(--primary)] hover:scale-105 transition" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
+                        Start Run
+                    </h2>
+                </button>
+            </div>
             <!-- The two canvases that display the game, one for just the player and one for the rest of the game-->
-            <canvas id="gameCanvas" class="absolute" height="500" width="900"></canvas>
-            <canvas id="playerCanvas" class="absolute" height="500" width="900"></canvas>
-        </div>
+            <canvas id="backCanvas" class="absolute" height="320" width="640"></canvas>
+            <canvas id="gameCanvas" class="absolute" height="320" width="640"></canvas>
+            <canvas id="playerCanvas" class="absolute z-1" height="320" width="640"></canvas>
+            <!-- UI for the game(score, multiplier, pause button)-->
+            <div class="w-full h-full z-10 hidden" id="gameUI">
+                <div class="flex">
+                    <div class="p-4 text-2xl text-[var(--primary)] w-fit inline-block absolute" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
+                        <h2 class="block pb-1">
+                            Score <span id="score">0</span>
+                        </h2>
+                        <div class="border border-[var(--primary)]">
+                        </div>
+                        <h2 class="block">
+                            x<span id="multiplier">1</span>
+                        </h2>
+                    </div>
+                    <div class="p-2 rounded-xl m-2 z-10 text-[var(--primary)] text-xl ml-auto w-fit hover:scale-110 transition" id="pauseButton">
+                        <button onclick="pauseButton()">
+                            <i class="fa fa-pause" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="hidden justify-center w-full h-fit" id="pauseScreen">
+                    <div class="items-center text-center border rounded-xl py-6 px-10 border-[var(--primary)] bg-[var(--background)] absolute">
+                        <h2 class="text-2xl text-[var(--primary)] pb-5">
+                            Run Paused
+                        </h2>
+                        <button onclick="pauseButton()" class="z-11">
+                            <div class="p-2 rounded-xl border border-[var(--primary)] bg-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)] hover:scale-105 transition">
+                                Continue
+                            </div> 
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+        <section class="absolute mt-[30rem]  text-[var(--primary)] sm:block hidden">
+            <div class="flex-justify-center">
+                <div class="text-xl">
+                    <div class="inline-block rounded-xl border border-[var(--primary)] p-1 w-[8rem] text-center mb-1 text-[small]">
+                        Space
+                    </div>
+                    <span class="mx-2">
+                        or
+                    </span>
+                    <i class="fa fa-mouse-pointer"></i>
+                    <div class="inline-block mx-2 ">
+                        &LongRightArrow;
+                    </div>
+                    <span>
+                        Jump
+                    </span>
+                </div>
+             </div>
+        </section>
+                        
     </div>
 {% endblock %}

@@ -35,7 +35,7 @@ class DeploymentConfig(Config):
     # DEBUG = False 
 
 class TestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///memory'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory'
     TESTING = True
 
     # Disable CSRF protection during automated tests
