@@ -22,7 +22,7 @@
         <!-- Show current user's coins if logged in -->
         {% if current_user.is_authenticated and current_user.best_stats %}
         <p class="text-center text-[var(--secondary)] mb-4">
-            Your coins: <span class="text-[var(--primary)] font-bold">{{ current_user.best_stats.currency }}</span>
+            Your gems: <span class="text-[var(--primary)] font-bold">{{ current_user.best_stats.currency }}</span>
         </p>
         {% endif %}
 
@@ -58,12 +58,8 @@
                         {% else %}text-white/80{% endif %}">
                         {{ stats.account.profile.username if stats.account.profile else stats.account.email.split('@')[0] }}
                         <!-- Show debuffed indicator if player is sabotaged -->
-                        {% if stats.account.received_sabotages %}
-                            {% for sab in stats.account.received_sabotages %}
-                                {% if sab.active %}
-                                    <span class="ml-2 text-red-400 text-xs"><i class="fa fa-bolt"></i> Debuffed</span>
-                                {% endif %}
-                            {% endfor %}
+                        {% if stats.debuffed %}
+                            <span class="ml-2 text-red-400 text-xs"><i class="fa fa-bolt"></i> Debuffed</span>
                         {% endif %}
                     </div>
                     
