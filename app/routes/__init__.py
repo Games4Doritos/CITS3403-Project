@@ -1,5 +1,4 @@
 # To make export easier
-
 from app.routes.main import main
 from app.routes.auth import auth
 from app.routes.user import user

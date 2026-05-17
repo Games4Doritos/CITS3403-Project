@@ -149,6 +149,7 @@ const pauseScreen = document.getElementById("pauseScreen")
 let score = 0;
 let baseMultiplier = 1;
 let bonusMultiplier = 0;
+
 const scoreElement = document.getElementById("score");
 const multiplierElement = document.getElementById("multiplier");
 
@@ -200,8 +201,9 @@ function frame(){
     // baseMultiplier maxes out at 5 - takes 800 seconds (~13 minutes) to reach
     baseMultiplier = Number(Math.round(1 + 0.1 * Math.min(Math.floor(runDuration * 0.00005),40) + 'e' + 1) + 'e-' + 1);
     // add baseMultiplier and bonusMultiplier together (done safely and rounded to avoid precision errors)
-    let multiplier = Number(Math.round(baseMultiplier + bonusMultiplier + 'e' + 1) + 'e-' + 1);
-    multiplierElement.textContent = `${multiplier}`;
+    let multiplier = Number(Math.round(baseMultiplier + bonusMultiplier - sabotageDebuff + 'e' + 1) + 'e-' + 1);
+    // Make sure multiplier never goes below 0.1
+    if (multiplier < 0.1) multiplier = 0.1;    multiplierElement.textContent = `${multiplier}`;
     // score is 1/10 * frame time at each frame, multiplied by the multiplier
     score += (deltaTime * 0.1) * multiplier;
     scoreElement.textContent = `${Math.round(score)}`;
