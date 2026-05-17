@@ -5,7 +5,7 @@
 {% block extra_head %}
     <script>
     // Injected by Flask - debuff value for this run
-        const sabotageDebuff = {{ debuff }};
+        let sabotageDebuff = {{ debuff }};
     </script>
     <script src="{{ url_for('static', filename='game.js')}}" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -61,18 +61,19 @@
             </div>
             <div class="absolute w-full h-full rounded-3xl z-10 items-center justify-center flex" id="startScreen">
                 <button onclick="initialAnim()">
-                    <h2 class="text-2xl text-[var(--primary)] hover:scale-105 transition" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
+                    <h2 class="mt-8 text-2xl text-[var(--primary)] hover:scale-105 transition" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
                         Start Run
                     </h2>
                 </button>
             </div>
             <!-- The two canvases that display the game, one for just the player and one for the rest of the game-->
+            <canvas id="backCanvas" class="absolute" height="320" width="640"></canvas>
             <canvas id="gameCanvas" class="absolute" height="320" width="640"></canvas>
-            <canvas id="playerCanvas" class="absolute" height="320" width="640"></canvas>
+            <canvas id="playerCanvas" class="absolute z-1" height="320" width="640"></canvas>
             <!-- UI for the game(score, multiplier, pause button)-->
             <div class="w-full h-full z-10 hidden" id="gameUI">
                 <div class="flex">
-                    <div class="p-4 text-2xl text-[var(--primary)] w-fit inline-block" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
+                    <div class="p-4 text-2xl text-[var(--primary)] w-fit inline-block absolute" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
                         <h2 class="block pb-1">
                             Score <span id="score">0</span>
                         </h2>
@@ -103,21 +104,30 @@
             </div>
             
         </section>
-        <section class="absolute mt-[30rem] flex justify-center text-[var(--primary)]">
-             <div class="text-xl">
-                <div class="inline-block rounded-xl border border-[var(--primary)] p-1 w-[8rem] text-center mb-1 text-[small]">
-                    Space
+        <section class="absolute mt-[30rem]  text-[var(--primary)]">
+            <div class="hidden justify-center p-5" id="retry">
+                <button onclick="restart()">
+                    <div class="p-2 rounded-xl bg-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)] text-white">
+                        Play Again
+                    </div>
+                </button>
+            </div>
+            <div class="flex-justify-center">
+                <div class="text-xl">
+                    <div class="inline-block rounded-xl border border-[var(--primary)] p-1 w-[8rem] text-center mb-1 text-[small]">
+                        Space
+                    </div>
+                    <span class="mx-2">
+                        or
+                    </span>
+                    <i class="fa fa-mouse-pointer"></i>
+                    <div class="inline-block mx-2 ">
+                        &LongRightArrow;
+                    </div>
+                    <span>
+                        Jump
+                    </span>
                 </div>
-                <span class="mx-2">
-                    or
-                </span>
-                <i class="fa fa-mouse-pointer"></i>
-                <div class="inline-block mx-2 ">
-                    &LongRightArrow;
-                </div>
-                <span>
-                    Jump
-                </span>
              </div>
         </section>
                         

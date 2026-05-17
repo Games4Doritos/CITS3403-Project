@@ -1,17 +1,25 @@
-const gameCanvas = document.getElementById('gameCanvas');
+const backCanvas = document.getElementById('backCanvas');
+const obstacleCanvas = document.getElementById('gameCanvas');
 const playerCanvas = document.getElementById('playerCanvas');
-const gameCtx = gameCanvas.getContext('2d');
+const obstacleCtx = gameCanvas.getContext('2d');
 const playerCtx = playerCanvas.getContext('2d');
+const backCtx = backCanvas.getContext('2d');
 
-gameCanvas.width = gameCanvas.clientWidth;
-gameCanvas.height = gameCanvas.clientHeight;
+obstacleCanvas.width = gameCanvas.clientWidth;
+obstacleCanvas.height = gameCanvas.clientHeight;
 playerCanvas.width = playerCanvas.clientWidth;
 playerCanvas.height = playerCanvas.clientHeight;
+backCanvas.width = backCanvas.clientWidth;
+backCanvas.height = backCanvas.clientHeight;
 
 const groundSprites = ["rock1", "rock2", "toxicSpill"];
 const groundDimensions = [{"w":50,"h":30}, {"w":40,"h":46}, {"w":50,"h":15}];
 
+const skySprites = ["drone", "lightningCloud"];
+const skyDimensions = [{"w":40, "h":30}, {"w":50, "h":30}]
+
 class player{
+    // dimensions of player are currently 50 x 55
     static {
         this.baseY = playerCanvas.height/2;
     }
@@ -25,10 +33,9 @@ class player{
         this.x = playerCanvas.width*0.1;
         this.y = player.baseY;
         this.sprite = new Image();
-        this.sprite.src = "/static/assets/technoChicken2.png";
+        this.sprite.src = "/static/assets/technoChicken.png";
         //Dimensions of sprite: 40x60
         this.jumping= false;
-        this.lastTime = performance.now();
         this.jumpTime;
         this.jumpCount = 0;
         this.sprite.onload = () => {
@@ -36,7 +43,7 @@ class player{
         }
     }
     initialAnim(context){
-        let startX = this.x - 40;
+        let startX = this.x - 50;
         let x = startX;
         let runStart = performance.now();
         let lastTime = runStart;
@@ -116,22 +123,20 @@ class obstacle{
         this.sprite = new Image();
         if (yState === "sky"){
             
-            /*let choice = Math.floor(Math.random()*2.9);
-            console.log(choice);
-            this.sprite.src = `/static/assets/${groundSprites[choice]}.png`;
-            this.w = groundDimensions[choice].w;
-            this.h = groundDimensions[choice].h;
-            this.y = gameCanvas.height/2 - 100 + (55- this.h);*/
+            let choice = Math.floor(Math.random()*1.9);
+            this.sprite.src = `/static/assets/${skySprites[choice]}.png`;
+            this.w = skyDimensions[choice].w;
+            this.h = skyDimensions[choice].h;
+            this.y = obstacleCanvas.height/2 - 100 +  (55-this.h);
         }
         else if (yState === "ground"){
             let choice = Math.floor(Math.random()*2.9);
-            console.log(choice);
             this.sprite.src = `/static/assets/${groundSprites[choice]}.png`;
             this.w = groundDimensions[choice].w;
             this.h = groundDimensions[choice].h;
-            this.y = gameCanvas.height/2 + (55-this.h);
+            this.y = obstacleCanvas.height/2 + (55-this.h);
         }
-        this.x = gameCanvas.width + this.w;
+        this.x = obstacleCanvas.width + this.w;
         this.alive = true;
         this.lastTime = performance.now();
     }
@@ -150,13 +155,13 @@ class obstacle{
         */
         const deltaTime = (now - this.lastTime)*0.06;
         this.lastTime = now;
-        this.x -= (gameCanvas.width + 100)*obstacle.speed *deltaTime;
+        this.x -= (obstacleCanvas.width + 100)*obstacle.speed *deltaTime;
         this.draw(context);
     }
 
 }
 
-curPlayer = new player();
+let curPlayer = new player();
 let objCount = 0;
 const obstacles = [];
 let animationID;
@@ -170,7 +175,9 @@ let finalRunDuration;
 let dead = false;
 const gameUI = document.getElementById("gameUI");
 const end = document.getElementById("end");
-const pauseScreen = document.getElementById("pauseScreen")
+const pauseScreen = document.getElementById("pauseScreen");
+const startScreen = document.getElementById("startScreen");
+const retry = document.getElementById("retry");
 
 let score = 0;
 let baseMultiplier = 1;
@@ -179,10 +186,23 @@ let bonusMultiplier = 0;
 const scoreElement = document.getElementById("score");
 const multiplierElement = document.getElementById("multiplier");
 
+// draws the background and ground
+const groundImage = new Image();
+groundImage.src = "/static/assets/ground.png";
+groundImage.onload = () => {
+    backCtx.drawImage(groundImage, 0, player.baseY + 30, obstacleCanvas.width, 80);
+}
+const backImage = new Image();
+backImage.src = "/static/assets/backGround.png";
+backImage.onload = () => {
+    backCtx.drawImage(backImage, 0, 10, obstacleCanvas.width, 160);
+}
+
+
 function frame(){
     let count = 0;
-    gameCanvas.width = gameCanvas.clientWidth;
-    gameCanvas.height = gameCanvas.clientHeight;
+    obstacleCanvas.width = obstacleCanvas.clientWidth;
+    obstacleCanvas.height = obstacleCanvas.clientHeight;
     playerCanvas.width = playerCanvas.clientWidth;
     playerCanvas.height = playerCanvas.clientHeight;
 
@@ -204,7 +224,7 @@ function frame(){
         }
         objCount++;
     }
-    else if (objCount < 5 && Math.random() < 0.1 && obstacles[obstacles.length-1].x < gameCanvas.width - obstacle.spacing){
+    else if (objCount < 5 && Math.random() < 0.1 && obstacles[obstacles.length-1].x < obstacleCanvas.width - obstacle.spacing){
         if (Math.random() < 0.5){
             obstacles.push(new obstacle("ground"));
         }
@@ -216,7 +236,7 @@ function frame(){
     if (dead){
         return;
     }
-    gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+    obstacleCtx.clearRect(0, 0, obstacleCanvas.width, player.baseY);
     playerCtx.clearRect(0, 0, playerCanvas.width, playerCanvas.height);
 
     const now = performance.now();
@@ -229,7 +249,8 @@ function frame(){
     // add baseMultiplier and bonusMultiplier together (done safely and rounded to avoid precision errors)
     let multiplier = Number(Math.round(baseMultiplier + bonusMultiplier - sabotageDebuff + 'e' + 1) + 'e-' + 1);
     // Make sure multiplier never goes below 0.1
-    if (multiplier < 0.1) multiplier = 0.1;    multiplierElement.textContent = `${multiplier}`;
+    if (multiplier < 0.1) multiplier = 0.1;    
+    multiplierElement.textContent = `${multiplier}`;
     // score is 1/10 * frame time at each frame, multiplied by the multiplier
     score += (deltaTime * 0.1) * multiplier;
     scoreElement.textContent = `${Math.round(score)}`;
@@ -255,9 +276,10 @@ function frame(){
         obstacle.speed = 0.0168125;
         obstacle.spacing = 380;
     }
+    
     curPlayer.update(playerCtx);
     obstacles.forEach(obs =>{
-        obs.update(gameCtx);
+        obs.update(obstacleCtx);
     });
     
     obstacles.forEach(obs => {
@@ -359,6 +381,8 @@ async function runEnd(){
     newCurrency.style.display = "block";
 
     uploadResults(finalRunSeconds, curPlayer.jumpCount, roundedScore, currency);
+
+    retry.style.display = "flex";
 }
 function pauseButton(){
     if (dead){
@@ -387,8 +411,6 @@ function pauseButton(){
 function initialAnim(){
     document.getElementById("startScreen").style.display = "none";
     gameUI.style.display = "block";
-    runStart = performance.now();
-    lastTime = runStart;
     curPlayer.initialAnim(playerCtx);
     
 }
@@ -401,7 +423,10 @@ function jumpHandle(event){
 }
 
 function start(){
+    runStart = performance.now();
+    lastTime = runStart;
     animationID = requestAnimationFrame(frame);
+    running = true;
     document.addEventListener('keydown', (event) => {
         jumpHandle(event);
     });
@@ -417,3 +442,46 @@ function start(){
     });
 }
 
+function restart(){
+    for  (let i =0; i< objCount;i++){
+        obstacles.pop()
+    }
+    objCount = 0;
+    running = false;
+
+    pausedTime = 0.00;
+    finalRunDuration = 0.00;
+    dead = false;
+
+    score = 0;
+    baseMultiplier = 1;
+    bonusMultiplier = 0;
+    sabotageDebuff = 0;
+
+    backCtx.clearRect(0,0, backCanvas.width, backCanvas.height);
+    playerCtx.clearRect(0,0, playerCanvas.width, playerCanvas.height);
+    obstacleCtx.clearRect(0,0, obstacleCanvas.width, obstacleCanvas.height);
+
+    backCtx.drawImage(groundImage, 0, player.baseY + 30, obstacleCanvas.width, 80);
+    backCtx.drawImage(backImage, 0, 10, obstacleCanvas.width, 160);
+
+    const finalTime = document.getElementById("finalTime");
+    const totalJumps = document.getElementById("totalJumps");
+    const totalScore = document.getElementById("totalScore");
+    const newCurrency = document.getElementById("newCurrency");
+    finalTime.style.display = "none";
+    totalJumps.style.display = "none";
+    totalScore.style.display = "none";
+    newCurrency.style.display = "none";
+    document.getElementById("failMessage").style.display = "none";
+    document.getElementById("successMessage").style.display = "none";
+
+    gameUI.style.display = "none";
+    end.style.display= "none";
+    startScreen.style.display = "flex";
+    multiplierElement.textContent = "1";
+    scoreElement.textContent = "0";
+    document.getElementById("pauseButton").style.display = "block";
+    curPlayer = new player();
+    retry.style.display = "none";
+}
