@@ -253,19 +253,12 @@
                     >
                 </div>
 
-                <div>
-                    <label class="block text-[var(--secondary)] mb-2">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        value="{{ current_user.email }}"
-                        readonly
-                        class="w-full rounded-xl bg-transparent border border-[var(--primary)] px-4 py-3 text-gray-400 cursor-not-allowed focus:outline-none"
-                    >
-                </div>
-
+                <input
+                    type="hidden"
+                    name="email"
+                    value="{{ current_user.email }}"
+                >
+                
                 <div class="flex flex-col md:flex-row justify-center gap-4 pt-4">
                     <button type="submit" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
                         Save Changes
