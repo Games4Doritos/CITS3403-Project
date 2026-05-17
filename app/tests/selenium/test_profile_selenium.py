@@ -123,3 +123,21 @@ class ProfileSeleniumTests(TestCase):
             "Sign Up",
             self.driver.page_source
         )
+    
+    # Purpose:
+    # Test navigation from auth page to profile redirect flow.
+    # Expected:
+    # User attempting profile access is redirected to auth page.
+    def test_profile_navigation_redirect(self):
+
+        self.driver.get(localHost + "profile")
+
+        self.assertIn(
+            "/auth",
+            self.driver.current_url
+        )
+
+        self.assertIn(
+            "Login",
+            self.driver.page_source
+        )
