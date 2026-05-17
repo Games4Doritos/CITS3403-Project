@@ -1,7 +1,6 @@
 # CITS3403 - Web-Application Project
 
-## Game Name:
-### Technoanimal Runner
+### Game Name: Technoanimal Runner
 
 ## Propose of the Application:
 This application is a browser-based multiplayer game built with Flask. The purpose of the project is to provide an engaging and interactive web-based gaming experience while demonstrating client-server web development concepts such as authentication, persistent databases, user interaction, and dynamic gameplay systems.
@@ -27,8 +26,8 @@ Users can:
 - interact with other users through gameplay features
 
 ## Team Members:
-markdown| UWA ID | Name | GitHub Username |
-|----------|-------------------|------------------|
+| UWA ID   | Name | GitHub Username |
+|----------|----------------|---------------|
 | 24147733 | Evan Miocevich | Games4Doritos |
 | 24439408 | Siyu Zhu | LZhuSY |
 | 24991367 | Veerjot Kaur | cyber-veerjot |
@@ -44,11 +43,41 @@ markdown| UWA ID | Name | GitHub Username |
 - Flask-Migrate
 - HTML
 - CSS
+- Font Awesome 4.7.0 (Library)
 - JavaScript
 - Tailwind CSS
 
 ## Installation Instructions:
 
+- All commands are to be run from the root directory
+
+- Python and pip must be installed
+
+### Install Dependencies
+
+```pip install -r requirements.txt```
+
+### Set environment variables
+
+```cp .env.example .env```
+
+Go to your new .env:
+
+- GAME_SECRET_KEY should be set to your own secret key (don't share with anyone!)
+- MAIL_SERVER and MAIL_PORT have already been specified
+- MAIL_USERNAME and MAIL_PASSWORD are only known to owners
+
+### Build database and apply migrations
+
+```flask db upgrade```
+
+This will build the database and keep it up up to date with all migrations
+
+### Run Server
+
+```python run.py```
+
+This will run the dev build by default
 
 ## Running Tests:
 ### Unit Tests:
@@ -80,7 +109,7 @@ markdown| UWA ID | Name | GitHub Username |
 ### Social Features:
 - Friend request system
 - Friend management
-- Bonus gifting interactions
+- Daily bonus gifting interactions
 
 ### Leaderboard System:
 - Global leaderboard rankings
@@ -102,16 +131,25 @@ The application uses SQLAlchemy models for persistent storage:
 - Protected authenticated routes
 
 ## Project Structure:
-app/
-├── routes/
-├── templates/
-├── static/
-├── tests/
-│   ├── unit/
-│   └── selenium/
-├── models.py
-├── forms.py
-├── config.py
+```
+.
+├──app/
+|   ├── routes/
+|   ├── templates/
+|   ├── static/
+|   ├── tests/
+|   │   ├── unit/
+|   │   └── selenium/
+|   ├── models.py
+|   ├── forms.py
+|   ├── config.py
+├──migrations/
+├──.env.example
+├──.flaskenv
+├──requirements.txt
+├──run.py
+
+```
 
 ## Testing Coverage:
 The project includes:
