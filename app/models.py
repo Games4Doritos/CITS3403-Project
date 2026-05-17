@@ -1,6 +1,7 @@
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from datetime import datetime, timezone
 import random
 import string
 
@@ -12,6 +13,10 @@ class Account(UserMixin, db.Model):
     friend_code = db.Column(db.String(8), nullable=False)
 
     is_email_verified = db.Column(db.Boolean, default=False, nullable=False)
+
+    bonus_timestamp = db.Column(db.DateTime(timezone=True), default=lambda:datetime.now())
+    has_bonus = db.Column(db.Boolean, default=False)
+
 
     # one-to-one relationship with Profile
     profile = db.relationship('Profile', backref='account', uselist=False, cascade='all, delete-orphan')

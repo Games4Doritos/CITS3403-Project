@@ -246,8 +246,8 @@ function frame(){
     // convert baseMultiplier to seconds and divide by 20 (increases every 20 seconds)
     // baseMultiplier maxes out at 5 - takes 800 seconds (~13 minutes) to reach
     baseMultiplier = Number(Math.round(1 + 0.1 * Math.min(Math.floor(runDuration * 0.00005),40) + 'e' + 1) + 'e-' + 1);
-    // add baseMultiplier and bonusMultiplier together (done safely and rounded to avoid precision errors)
-    let multiplier = Number(Math.round(baseMultiplier + bonusMultiplier - sabotageDebuff + 'e' + 1) + 'e-' + 1);
+    // add baseMultiplier and bonusMultiplier together, then add bonus and debuff is active (done safely and rounded to avoid precision errors)
+    let multiplier = Number(Math.round(baseMultiplier + bonusMultiplier - sabotageDebuff + dailyFriendBonus + 'e' + 1) + 'e-' + 1);
     // Make sure multiplier never goes below 0.1
     if (multiplier < 0.1) multiplier = 0.1;    
     multiplierElement.textContent = `${multiplier}`;
@@ -409,6 +409,7 @@ function pauseButton(){
 }
 
 function initialAnim(){
+    multiplierElement.textContent = `${1 - sabotageDebuff + dailyFriendBonus}`;
     document.getElementById("startScreen").style.display = "none";
     gameUI.style.display = "block";
     curPlayer.initialAnim(playerCtx);

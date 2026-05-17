@@ -7,12 +7,12 @@ from app.models import BestStats
 game = Blueprint("game", __name__)
 
 SABOTAGE_DEBUFF = 0.5
+FRIEND_BONUS = 0.5
 
 @game.route('/play', methods=["GET", "POST"])
 @login_required
 def play():
-    
-    def validateResults(requestData):
+    def validateResults(requestData, hasBonus):
         # checks if any of the figures are negative (invalid)
         if requestData["totalJumps"] < 0:
             return False
@@ -25,17 +25,28 @@ def play():
         # checks if total score < time (invalid as score += 100*deltaTime (s) at each frame)
         if requestData["totalScore"] < requestData["finalTime"]:
             return False
-        # checks if the score is possible within the given time
+        bonusCheck = 0
+        if hasBonus:
+            bonusCheck = 0.5
+        # Checks if the score is possible within the given time
+        
+        # Total possible score (without friend bonus) before max multiplier: 100 * 20(1.5 + 1.6 + ... + 5.4) = 276000
+        # Total possible score (with friend bonus) before max multiplier: 100 * 20(2.0 + 2.1 + ... + 5.9) = 316000
+        # It takes 800 seconds (40 intervals of 20 seconds) to get to max multiplier (increments 0.1 each interval)
+        
         intervalCount = int(requestData["finalTime"])//20
         maxPossibleScore = 0
         if intervalCount <= 40:
             for i in range(intervalCount):
-                maxPossibleScore += 20 * (1.5 + 0.1*i)
-            maxPossibleScore += (requestData["finalTime"] - 20*intervalCount)*(1.5+0.1*intervalCount)
+                maxPossibleScore += 20 * (1.5 + 0.1*i + bonusCheck)
+            maxPossibleScore += (requestData["finalTime"] - 20*intervalCount)*(1.5+0.1*intervalCount + bonusCheck)
             maxPossibleScore *= 100
         else:
             maxMultiplierTime = requestData["finalTime"] - 800
-            maxPossibleScore = 100*(5.5 * maxMultiplierTime + 2760)
+            if hasBonus:
+                maxPossibleScore = 100*(6 * maxMultiplierTime + 3160)
+            else:
+                maxPossibleScore = 100*(5.5 * maxMultiplierTime + 2760)
         if maxPossibleScore < requestData["totalScore"]:
             return False
         return True
@@ -43,9 +54,12 @@ def play():
     if request.method == "POST":
         requestData = loads(request.data.decode())
         if current_user.is_authenticated:
-            valid = validateResults(requestData)
+            valid = validateResults(requestData, current_user.has_bonus)
             if not valid:
                 return "Invalid Run Results", 400
+            
+            if current_user.has_bonus:
+                current_user.has_bonus = False
 
             if not current_user.best_stats:
                 bestStats = BestStats(
@@ -77,8 +91,11 @@ def play():
     
     # Inject debuff into template for Jinja
     debuff = 0
+    friendBonus = 0
     if current_user.is_authenticated and current_user.best_stats:
         if current_user.best_stats.debuffed:
             debuff = SABOTAGE_DEBUFF
+    if current_user.is_authenticated and current_user.has_bonus:
+        friendBonus = FRIEND_BONUS
 
-    return render_template('play.html', debuff=debuff)
+    return render_template('play.html', debuff=debuff, friendBonus = friendBonus)
