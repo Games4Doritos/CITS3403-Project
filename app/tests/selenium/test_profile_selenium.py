@@ -9,6 +9,8 @@ from app.models import Account, Profile
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 localHost = "http://127.0.0.1:5000/"
@@ -140,4 +142,45 @@ class ProfileSeleniumTests(TestCase):
         self.assertIn(
             "Login",
             self.driver.page_source
+        )
+    
+    # Purpose:
+    # Test that a logged-in user can edit their profile username.
+    # Expected:
+    # The updated username is displayed on the profile page.
+    def test_edit_profile_updates_username(self):
+
+        # Create verified user with existing profile
+        self.create_user()
+
+        # Open auth page
+        self.driver.get(localHost + "auth")
+
+        # Fill login form
+        login_form = self.driver.find_element(By.ID, "login_form")
+        login_form.find_element(By.NAME, "email").send_keys("test@example.com")
+        login_form.find_element(By.NAME, "password").send_keys("password123")
+        login_form.find_element(By.ID, "login_submit").click()
+
+        # Wait until profile page loads
+        WebDriverWait(self.driver, 10).until(
+            EC.url_contains("profile")
+        )
+
+        # Open edit profile page
+        self.driver.get(localHost + "profile?mode=edit")
+
+        # Update username only
+        username_input = self.driver.find_element(By.NAME, "username")
+        username_input.clear()
+        username_input.send_keys("UpdatedUser")
+
+        # Submit edit profile form
+        self.driver.find_element(By.XPATH, "//button[contains(text(), 'Save Changes')]").click()
+
+        # Verify updated username appears
+        self.assertIn(
+            "UpdatedUser",
+            self.driver.page_source,
+            "Updated username should be displayed on the profile page after saving changes."
         )
