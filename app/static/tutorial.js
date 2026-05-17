@@ -154,7 +154,6 @@ function tutorialFrame(){
     }
 
     // Update obstacles and player
-    tutorialCtx.drawImage(backImage, 0,20, tutorialCanvas.width, 160)
     tutorialObstacles.forEach(obs => obs.update(tutorialCtx));
     curTutorialPlayer.update(tutorialPlayerCtx);
 
