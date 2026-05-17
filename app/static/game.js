@@ -8,6 +8,9 @@ gameCanvas.height = gameCanvas.clientHeight;
 playerCanvas.width = playerCanvas.clientWidth;
 playerCanvas.height = playerCanvas.clientHeight;
 
+const groundSprites = ["rock1", "rock2", "toxicSpill"];
+const groundDimensions = [{"w":50,"h":30}, {"w":40,"h":46}, {"w":50,"h":15}];
+
 class player{
     static {
         this.baseY = playerCanvas.height/2;
@@ -22,14 +25,14 @@ class player{
         this.x = playerCanvas.width*0.1;
         this.y = player.baseY;
         this.sprite = new Image();
-        this.sprite.src = "/static/assets/technoChicken.png";
+        this.sprite.src = "/static/assets/technoChicken2.png";
         //Dimensions of sprite: 40x60
         this.jumping= false;
         this.lastTime = performance.now();
         this.jumpTime;
         this.jumpCount = 0;
         this.sprite.onload = () => {
-            playerCtx.drawImage(this.sprite,this.x - 40,this.y,40,60)
+            playerCtx.drawImage(this.sprite,this.x - 50,this.y,50,55)
         }
     }
     initialAnim(context){
@@ -52,9 +55,9 @@ class player{
             const t = now-runStart;
 
             //x = startX + (t < 250 ? t * t * 0.000192: (t) * (t) * 0.000192);
-            x = startX + t * 0.001 * 80
+            x = startX + t * 0.001 * 100
             playerCtx.clearRect(0, 0, playerCanvas.width, playerCanvas.height);
-            playerCtx.drawImage(this.sprite,x,this.y,40,60);
+            playerCtx.drawImage(this.sprite,x,this.y,50,55);
             
             animID = requestAnimationFrame(initialFrame);
 
@@ -63,7 +66,7 @@ class player{
         
     }
     draw(context){
-        context.drawImage(this.sprite,this.x,this.y,40,60);
+        context.drawImage(this.sprite,this.x,this.y,50,55);
     }
     update(context){
 
@@ -103,29 +106,40 @@ class obstacle{
     sprite;
     alive;
     lastTime;
+    w;
+    h;
     static {
         this.speed = 1/128;
         this.spacing = 200;
     }
-    constructor(type, yState){
-        
+    constructor(yState){
+        this.sprite = new Image();
         if (yState === "sky"){
-            this.y = gameCanvas.height/2 - 100;
+            
+            /*let choice = Math.floor(Math.random()*2.9);
+            console.log(choice);
+            this.sprite.src = `/static/assets/${groundSprites[choice]}.png`;
+            this.w = groundDimensions[choice].w;
+            this.h = groundDimensions[choice].h;
+            this.y = gameCanvas.height/2 - 100 + (55- this.h);*/
         }
         else if (yState === "ground"){
-            this.y = gameCanvas.height/2;
+            let choice = Math.floor(Math.random()*2.9);
+            console.log(choice);
+            this.sprite.src = `/static/assets/${groundSprites[choice]}.png`;
+            this.w = groundDimensions[choice].w;
+            this.h = groundDimensions[choice].h;
+            this.y = gameCanvas.height/2 + (55-this.h);
         }
-        this.x = gameCanvas.width + 50;
-        this.sprite = new Image();
-        this.sprite.src = `/static/assets/${type}.png`;
+        this.x = gameCanvas.width + this.w;
         this.alive = true;
         this.lastTime = performance.now();
     }
     draw(context){
-        context.drawImage(this.sprite,this.x,this.y,50,50);
+        context.drawImage(this.sprite,this.x,this.y,this.w,this.h);
     }
     update(context){
-        if (this.x < -50){
+        if (this.x < -this.w){
             this.alive = false;
         }
         const now = performance.now();
@@ -183,19 +197,19 @@ function frame(){
     }
     if (objCount === 0){
         if (Math.random() < 0.5){
-            obstacles.push(new obstacle("random", "ground"));
+            obstacles.push(new obstacle("ground"));
         }
         else{
-            obstacles.push(new obstacle("random", "sky"));
+            obstacles.push(new obstacle("sky"));
         }
         objCount++;
     }
     else if (objCount < 5 && Math.random() < 0.1 && obstacles[obstacles.length-1].x < gameCanvas.width - obstacle.spacing){
         if (Math.random() < 0.5){
-            obstacles.push(new obstacle("random", "ground"));
+            obstacles.push(new obstacle("ground"));
         }
         else{
-            obstacles.push(new obstacle("random", "sky"));
+            obstacles.push(new obstacle("sky"));
         }
         objCount++;
     }
@@ -247,8 +261,12 @@ function frame(){
     });
     
     obstacles.forEach(obs => {
-        // Checks if colliding with an obstacle at every frame -> run ends if so
-        if (Math.abs(curPlayer.x - obs.x) < 48 && Math.abs(curPlayer.y -obs.y) <  48){
+        centeredPlayerX = curPlayer.x + 0.5*50;
+        centeredPlayerY = curPlayer.y + 0.5*55;
+        centeredObsX = obs.x + 0.5 *obs.w;
+        centeredObsY = obs.y + 0.5 *obs.h;
+
+        if (Math.abs(centeredPlayerX - centeredObsX) < 0.5*50 + 0.5*obs.w - 2 && Math.abs(centeredPlayerY - centeredObsY) <  0.5*55 + 0.5*obs.h -2){
             runEnd();
             return;
         }
