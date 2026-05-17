@@ -45,10 +45,10 @@ class ProfileTestCase(BaseTestCase):
         response = self.client.get("/profile")
 
         # 302 means redirect response
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, "Unauthenticated users should be redirected from the profile page.")
 
         # Check redirect goes to auth page
-        self.assertIn("/auth", response.location)
+        self.assertIn("/auth", response.location, "Profile page should redirect unauthenticated users to the auth page.")
 
     # Test that users without profiles are redirected to edit mode
     def test_profile_redirects_to_edit_if_no_profile(self):
@@ -58,10 +58,10 @@ class ProfileTestCase(BaseTestCase):
 
         response = self.client.get("/profile")
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 302, "Logged-in users without a profile should be redirected.")
 
         # Check redirect includes edit mode
-        self.assertIn("mode=edit", response.location)
+        self.assertIn("mode=edit", response.location, "Users without a profile should be redirected to edit mode.")
 
     # Test that logged-in users can view their username on profile page
     def test_profile_displays_username_for_logged_in_user(self):
@@ -72,10 +72,10 @@ class ProfileTestCase(BaseTestCase):
         response = self.client.get("/profile")
 
         # 200 means successful page load
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, "Profile page should load successfully for logged-in users with a profile.")
 
         # Check username appears on page
-        self.assertIn(b"Tester", response.data)
+        self.assertIn(b"Tester", response.data, "Logged-in user's username should be displayed on the profile page.")
 
     # Test profile edit validation with empty fields
     def test_edit_profile_rejects_empty_fields(self):
@@ -94,4 +94,4 @@ class ProfileTestCase(BaseTestCase):
         )
 
         # Check validation message appears
-        self.assertIn(b"Invalid Action.", response.data)
+        self.assertIn(b"Invalid Action.", response.data, "Submitting empty profile fields should show an invalid action message.")

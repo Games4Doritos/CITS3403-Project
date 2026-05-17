@@ -97,7 +97,8 @@ class ProfileSeleniumTests(TestCase):
 
         self.assertIn(
             "/auth",
-            self.driver.current_url
+            self.driver.current_url,
+            "Unauthenticated users should be redirected to the auth page."
         )
 
     # Purpose:
@@ -110,7 +111,8 @@ class ProfileSeleniumTests(TestCase):
 
         self.assertIn(
             "Login",
-            self.driver.page_source
+            self.driver.page_source,
+            "Login text should appear on the auth page."
         )
 
     # Purpose:
@@ -123,7 +125,8 @@ class ProfileSeleniumTests(TestCase):
 
         self.assertIn(
             "Sign Up",
-            self.driver.page_source
+            self.driver.page_source,
+            "Sign Up text should appear on the auth page."
         )
     
     # Purpose:
@@ -136,12 +139,14 @@ class ProfileSeleniumTests(TestCase):
 
         self.assertIn(
             "/auth",
-            self.driver.current_url
+            self.driver.current_url, 
+            "Profile page should redirect unauthenticated users to the auth page."
         )
 
         self.assertIn(
             "Login",
-            self.driver.page_source
+            self.driver.page_source,
+            "Auth page should display Login text after redirecting from profile."
         )
     
     # Purpose:
