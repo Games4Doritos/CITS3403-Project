@@ -56,7 +56,6 @@
                     <h3 class="text-[var(--secondary)] text-lg mb-1">
                         High Score
                     </h3>
-
                     <p class="text-2xl font-bold text-white">
                         {{ current_user.best_stats.highscore if current_user.best_stats else 0 }}
                     </p>
@@ -64,11 +63,10 @@
 
                 <div class="rounded-2xl border border-[var(--primary)] px-4 py-2 text-center">
                     <h3 class="text-[var(--secondary)] text-lg mb-1">
-                        World Rank
+                        Gems
                     </h3>
-
                     <p class="text-2xl font-bold text-white">
-                        N/A
+                        {{ current_user.best_stats.currency if current_user.best_stats else 0 }}
                     </p>
                 </div>
 
@@ -76,7 +74,6 @@
                     <h3 class="text-[var(--secondary)] text-lg mb-1">
                         Games Played
                     </h3>
-
                     <p class="text-2xl font-bold text-white">
                         {{ current_user.best_stats.total_games if current_user.best_stats else 0 }}
                     </p>
@@ -154,7 +151,6 @@
                             </div>
                         </button>
                     </form>
-                    
                 </div>
                 <div class="flex py-5 flex-wrap gap-2">
                     {% if friendAccounts%}
@@ -179,12 +175,10 @@
                                 {% endif %}
                             </button>
                         {% endfor %}
-
                     {% else %}
                         <p class="text-[var(--secondary)]">
                             Get a player's friend code to send them a request!
                         </p>
-
                     {% endif %}
                 </div>
                 <form method="POST">
@@ -196,7 +190,6 @@
                                 type="text",
                                 required=True,
                                 placeholder="8-digit code"
-                                
                             )}}
                         </div>
                         <button 
@@ -212,12 +205,10 @@
                 <p class="text-[var(--secondary)] text-lg">
                     Your friend code: <span class="text-white">{{ current_user.friend_code }}</span>
                 </p>
-
             </div>
 
             <!-- Buttons -->
             <div class="flex flex-col md:flex-row justify-center gap-4 mb-2">
-
                 <a href="{{ url_for('user.profile', mode='edit') }}" class="bg-[var(--primary)] text-white px-6 py-3 rounded-2xl text-center shadow-[0_0_20px_var(--secondary)] hover:opacity-90 transition">
                     Edit Profile
                 </a>
