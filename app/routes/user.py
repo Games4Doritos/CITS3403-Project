@@ -29,13 +29,9 @@ def profile():
             # Save profile form after validation
             if editForm.validate_on_submit():
 
-                # Remove extra spaces from inputs
+                # Remove extra spaces from username input
                 username = editForm.username.data.strip()
-                email = editForm.email.data.strip().lower()
-
-                # Update account email
-                current_user.email = email
-
+                
                 # New user without a profile yet
                 if not current_user.profile:
                     profile = Profile(id=current_user.id,username=username)
