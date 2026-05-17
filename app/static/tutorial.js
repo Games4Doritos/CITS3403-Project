@@ -93,13 +93,6 @@ let objCount = 0;
 const tutorialObstacles = [];
 let tutorialAnimationID;
 
-function drawControls(){
-    tutorialCtx.font = 'bold 16px Arial';
-    tutorialCtx.fillStyle = 'rgba(142, 77, 228, 0.8)';
-    tutorialCtx.textAlign = 'center';
-    tutorialCtx.fillText('SPACE to jump', tutorialCanvas.width * 0.5, tutorialCanvas.height * 0.85);
-}
-
 function tutorialFrame(){
     tutorialCanvas.width = tutorialCanvas.clientWidth;
     tutorialCanvas.height = tutorialCanvas.clientHeight;
@@ -140,14 +133,12 @@ function tutorialFrame(){
     tutorialObstacles.forEach(obs => obs.update(tutorialCtx));
     curTutorialPlayer.update(tutorialPlayerCtx);
 
-    // Draw controls hint
-    drawControls();
-
     tutorialAnimationID = requestAnimationFrame(tutorialFrame);
 }
 
 window.addEventListener('keypress', (event) => {
     if (event.code === 'Space'){
+        event.preventDefault();
         curTutorialPlayer.jump();
     }
 });
