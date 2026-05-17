@@ -19,11 +19,21 @@
             Top players worldwide
         </p>
 
+        <!-- Show current user's coins if logged in -->
+        {% if current_user.is_authenticated and current_user.best_stats %}
+        <p class="text-center text-[var(--secondary)] mb-4">
+            Your gems: <span class="text-[var(--primary)] font-bold">{{ current_user.best_stats.currency }}</span>
+        </p>
+        {% endif %}
+
         <div class="space-y-3">
             <div class="flex border-b border-[var(--primary)] pb-3 opacity-60 px-3 text-sm">
                 <div class="w-16 text-[var(--primary)] font-bold">Rank</div>
                 <div class="flex-1 text-[var(--primary)] font-bold">Player</div>
                 <div class="w-24 text-right text-[var(--primary)] font-bold">Score</div>
+                {% if current_user.is_authenticated %}
+                <div class="w-24 text-right text-[var(--primary)] font-bold">Sabotage</div>
+                {% endif %}
             </div>
 
             {% if top_scores %}
@@ -47,6 +57,10 @@
                         {% elif loop.index == 3 %}text-white font-semibold
                         {% else %}text-white/80{% endif %}">
                         {{ stats.account.profile.username if stats.account.profile else stats.account.email.split('@')[0] }}
+                        <!-- Show debuffed indicator if player is sabotaged -->
+                        {% if stats.debuffed %}
+                            <span class="ml-2 text-red-400 text-xs"><i class="fa fa-bolt"></i> Debuffed</span>
+                        {% endif %}
                     </div>
                     
                     <div class="w-24 text-right 
@@ -56,6 +70,21 @@
                         {% else %}text-white/80{% endif %}">
                         {{ stats.highscore }}
                     </div>
+
+                    <!-- Sabotage button (only show if logged in and not yourself) -->
+                    {% if current_user.is_authenticated %}
+                    <div class="w-24 text-right">
+                        {% if stats.id != current_user.id %}
+                            <button 
+                                onclick="sendSabotage({{ stats.id }})"
+                                class="px-2 py-1 text-xs rounded-lg border border-red-500/50 text-red-400 hover:bg-red-500/10 transition">
+                                <i class="fa fa-bolt"></i> 100
+                            </button>
+                        {% else %}
+                            <span class="text-xs text-[var(--secondary)] opacity-40">You</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 </div>
                 {% endfor %}
             {% else %}
@@ -81,4 +110,39 @@
         </div>
     </div>
 </section>
+
+<!-- Toast notification -->
+<div id="toast" class="hidden fixed bottom-8 right-8 px-6 py-3 rounded-2xl text-white shadow-lg transition-all duration-300"></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function sendSabotage(targetId) {
+    fetch(`/sabotage/${targetId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const toast = document.getElementById('toast');
+        if (data.message) {
+            toast.textContent = data.message;
+            toast.className = 'fixed bottom-8 right-8 px-6 py-3 rounded-2xl text-white shadow-lg bg-green-600';
+        } else {
+            toast.textContent = data.error;
+            toast.className = 'fixed bottom-8 right-8 px-6 py-3 rounded-2xl text-white shadow-lg bg-red-600';
+        }
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3000);
+        
+        // Reload page to update coin count
+        setTimeout(() => location.reload(), 1500);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
 {% endblock %}
