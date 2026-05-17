@@ -9,6 +9,9 @@ playerCanvas.width = playerCanvas.clientWidth;
 playerCanvas.height = playerCanvas.clientHeight;
 
 class player{
+    static {
+        this.baseY = playerCanvas.height/2;
+    }
     x;
     y;
     sprite;
@@ -17,12 +20,13 @@ class player{
     jumpCount;
     constructor(){
         this.x = playerCanvas.width*0.1;
-        this.y = playerCanvas.height/2;
+        this.y = player.baseY;
         this.sprite = new Image();
         this.sprite.src = "/static/assets/technoChicken.png";
         //Dimensions of sprite: 40x60
-        this.jumpMemory = -1;
+        this.jumping= false;
         this.lastTime = performance.now();
+        this.jumpTime;
         this.jumpCount = 0;
         this.sprite.onload = () => {
             playerCtx.drawImage(this.sprite,this.x - 40,this.y,40,60)
@@ -63,24 +67,32 @@ class player{
     }
     update(context){
 
-        if (this.jumpMemory >-1){
+        if (this.jumping){
+            
             //velocity will start at -13, decelerate to 0, then accelerate to 13 (standard parabolic jump)
             //total jump height = 0.5 * (13) *(13+1) = 78
-            this.y -= (this.jumpMemory - 13) ;
-            this.jumpMemory--;
+            //has been adjusted using deltatime to follow the function f(t) = -1/2 * t^2 + 13t - 6.5 (matches above behaviour)
+            const now = performance.now();
+            const t = (now - this.jumpTime) / 20;
+            if (t >= 25.5){
+                this.jumping = false;
+                this.y = player.baseY;
+                return;
+            }
+            this.y = player.baseY - (-0.5 * t * t + 13 * t - 6.5);
             
         }
         else{
             bonusMultiplier = 0;
         }
-        
         this.draw(context);
     }
     jump(){
-        if (this.jumpMemory == -1){
+        if (!this.jumping){
+            this.jumping = true;
+            this.jumpTime = performance.now();
             bonusMultiplier = 0.5
             this.jumpCount++;
-            this.jumpMemory = 26; 
         }
     }
 }

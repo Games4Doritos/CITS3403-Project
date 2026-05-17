@@ -61,7 +61,7 @@
             </div>
             <div class="absolute w-full h-full rounded-3xl z-10 items-center justify-center flex" id="startScreen">
                 <button onclick="initialAnim()">
-                    <h2 class="text-2xl text-[var(--primary)] hover:scale-105 transition">
+                    <h2 class="text-2xl text-[var(--primary)] hover:scale-105 transition" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
                         Start Run
                     </h2>
                 </button>
@@ -88,13 +88,13 @@
                         </button>
                     </div>
                 </div>
-                <div class="hidden justify-center w-full h-fit z-10" id="pauseScreen">
-                    <div class="items-center text-center border rounded-xl py-6 px-10 border-[var(--primary)] backdrop-brightness-[80%] bg-[var(--background)]">
+                <div class="hidden justify-center w-full h-fit" id="pauseScreen">
+                    <div class="items-center text-center border rounded-xl py-6 px-10 border-[var(--primary)] bg-[var(--background)] absolute">
                         <h2 class="text-2xl text-[var(--primary)] pb-5">
                             Run Paused
                         </h2>
-                        <button onclick="pauseButton()">
-                            <div class="p-2 rounded-xl border border-[var(--primary)] bg-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)] z-11 hover:scale-105 transition ">
+                        <button onclick="pauseButton()" class="z-11">
+                            <div class="p-2 rounded-xl border border-[var(--primary)] bg-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)] hover:scale-105 transition">
                                 Continue
                             </div> 
                         </button>
@@ -105,7 +105,7 @@
         </section>
         <section class="absolute mt-[30rem] flex justify-center text-[var(--primary)]">
              <div class="text-xl">
-                <div class="inline-block rounded-xl border border-[var(--primary)] p-1.5 w-[10rem] text-center mb-1 text-[medium]">
+                <div class="inline-block rounded-xl border border-[var(--primary)] p-1 w-[8rem] text-center mb-1 text-[small]">
                     Space
                 </div>
                 <span class="mx-2">
