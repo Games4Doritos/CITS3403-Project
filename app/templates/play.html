@@ -21,7 +21,7 @@
             </div>
             <!--End Run Screen-->
             <div class="absolute h-[320px] w-[640px] hidden items-center justify-center z-10 backdrop-brightness-[80%] rounded-3xl" id="end">
-                <div class="rounded-2xl border px-10 py-5 bg-[var(--background)] border-[var(--primary)]">
+                <div class="rounded-2xl border px-10 pt-5 pb-2 bg-[var(--background)] border-[var(--primary)]">
                     <h1 class="text-5xl text-[var(--primary)] mb-2.5 pb-2.5 border-b border-[var(--primary)]" style="text-shadow: 0 0 1rem var(--secondary), 0 0 1rem var(--primary);">
                         Run Ended!
                     </h1>
@@ -57,7 +57,15 @@
                     <h3 class="text-lg hidden text-[var(--primary)]" id="successMessage">
                         Run Successfully Submitted!
                     </h3>
+                    <div class="hidden" id="retry">
+                        <button onclick="restart()">
+                            <div class="mt-1 p-2 rounded-xl bg-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)] text-white hover:scale-105 transition">
+                                Play Again
+                            </div>
+                        </button>
+                    </div>
                 </div>
+                
             </div>
             <div class="absolute w-full h-full rounded-3xl z-10 items-center justify-center flex" id="startScreen">
                 <button onclick="initialAnim()">
@@ -105,13 +113,6 @@
             
         </section>
         <section class="absolute mt-[30rem]  text-[var(--primary)]">
-            <div class="hidden justify-center p-5" id="retry">
-                <button onclick="restart()">
-                    <div class="p-2 rounded-xl bg-[var(--primary)] shadow-[0_0_0.5rem_var(--secondary)] text-white">
-                        Play Again
-                    </div>
-                </button>
-            </div>
             <div class="flex-justify-center">
                 <div class="text-xl">
                     <div class="inline-block rounded-xl border border-[var(--primary)] p-1 w-[8rem] text-center mb-1 text-[small]">
