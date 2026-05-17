@@ -7,11 +7,11 @@ from app.models import BestStats
 game = Blueprint("game", __name__)
 
 SABOTAGE_DEBUFF = 0.5
+FRIEND_BONUS = 0.5
 
 @game.route('/play', methods=["GET", "POST"])
 @login_required
 def play():
-    
     def validateResults(requestData):
         # checks if any of the figures are negative (invalid)
         if requestData["totalJumps"] < 0:
@@ -77,8 +77,11 @@ def play():
     
     # Inject debuff into template for Jinja
     debuff = 0
+    friendBonus = 0
     if current_user.is_authenticated and current_user.best_stats:
         if current_user.best_stats.debuffed:
             debuff = SABOTAGE_DEBUFF
+    if current_user.is_authenticated and current_user.has_bonus:
+        friendBonus = FRIEND_BONUS
 
-    return render_template('play.html', debuff=debuff)
+    return render_template('play.html', debuff=debuff, friendBonus = friendBonus)

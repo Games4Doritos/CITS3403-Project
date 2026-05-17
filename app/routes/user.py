@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, request, url_for, flash
 from flask_login import current_user, login_required
-
+from datetime import datetime, timezone
 
 from app import db
 from app.models import Profile, Account, Friendship
@@ -130,9 +130,21 @@ def profile():
                             return redirect(url_for("user.profile"))
                     # if not pending, the gift bonus action is assumed
                     else:
-                        #to do for future issue
-                        flash('Bonus Gifted!')
-                        return redirect(url_for("user.profile"))
+                        bonusTimestamp = friend.bonus_timestamp
+                        curTimestamp = datetime.now()
+                        if (curTimestamp - bonusTimestamp).total_seconds() >= 86400:
+                            if not friend.has_bonus:
+                                friend.has_bonus = True
+                                friend.bonus_timestamp = datetime.now()
+                                
+                                flash('Bonus Gifted!')
+                                return redirect(url_for("user.profile"))
+                            else:
+                                flash("That friend hasn't used up their existing bonus!")
+                                return redirect(url_for("user.profile"))
+                        else:
+                            flash("It hasn't been a day since that friend's last bonus!")
+                            return redirect(url_for("user.profile"))
                 
                 else:
                     flash('Invalid request to accept friend/gift bonus.')
