@@ -9,7 +9,7 @@ login = LoginManager()
 mail = Mail()
 
 # Redirect unauthenticated users to auth page
-login.login_view = "auth.auth_page"
+login.login_view = 'auth.login_signup'
 
 def create_app(config):
     # Create Flask app instance with config settings
