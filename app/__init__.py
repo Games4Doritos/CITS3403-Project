@@ -9,8 +9,7 @@ login = LoginManager()
 mail = Mail()
 
 # Redirect unauthenticated users to auth page
-login.login_view = 'auth.login_signup'
-
+login.login_view = 'auth.auth_page'
 
 def create_app(config):
     # Create Flask app instance with config settings
@@ -22,9 +21,8 @@ def create_app(config):
     login.init_app(app)
     mail.init_app(app)
 
-    # register blueprint
+    # register blueprints
     from app.routes import main, auth, user, game, leaderboard
-
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(user)
@@ -32,5 +30,4 @@ def create_app(config):
     app.register_blueprint(leaderboard)
 
     from app import models
-
     return app
